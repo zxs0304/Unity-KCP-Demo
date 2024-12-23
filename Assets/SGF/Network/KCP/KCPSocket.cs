@@ -180,15 +180,17 @@ namespace SGF.Network.KCP
 
         public string LocalIP
         {
-            get { return UnityEngine.Network.player.ipAddress; }
+            //get { return UnityEngine.Network.player.ipAddress; }
+            get { return "127.0.0.1"; }
         }
 
         public IPEndPoint LocalEndPoint
         {
             get
             {
-                if (m_LocalEndPoint == null || 
-                    m_LocalEndPoint.Address.ToString() != UnityEngine.Network.player.ipAddress)
+                if (m_LocalEndPoint == null ||
+                    //m_LocalEndPoint.Address.ToString() != UnityEngine.Network.player.ipAddress)
+                    m_LocalEndPoint.Address.ToString() != "127.0.0.1")
                 {
                     IPAddress ip = IPAddress.Parse(LocalIP);
                     m_LocalEndPoint = new IPEndPoint(ip, LocalPort);

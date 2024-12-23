@@ -1,30 +1,31 @@
 ﻿using System;
+using UnityEngine;
 
 namespace SGF.Network.KCP
 {
     public class KCP
     {
-        public const int IKCP_RTO_NDL = 30;  // no delay min rto
-        public const int IKCP_RTO_MIN = 100; // normal min rto
-        public const int IKCP_RTO_DEF = 200;
-        public const int IKCP_RTO_MAX = 60000;
-        public const int IKCP_CMD_PUSH = 81; // cmd: push data
-        public const int IKCP_CMD_ACK = 82; // cmd: ack
-        public const int IKCP_CMD_WASK = 83; // cmd: window probe (ask)
-        public const int IKCP_CMD_WINS = 84; // cmd: window size (tell)
-        public const int IKCP_ASK_SEND = 1;  // need to send IKCP_CMD_WASK
-        public const int IKCP_ASK_TELL = 2;  // need to send IKCP_CMD_WINS
-        public const int IKCP_WND_SND = 32;
-        public const int IKCP_WND_RCV = 32;
-        public const int IKCP_MTU_DEF = 1400;
-        public const int IKCP_ACK_FAST = 3;
-        public const int IKCP_INTERVAL = 100;
-        public const int IKCP_OVERHEAD = 24;
-        public const int IKCP_DEADLINK = 10;
-        public const int IKCP_THRESH_INIT = 2;
-        public const int IKCP_THRESH_MIN = 2;
-        public const int IKCP_PROBE_INIT = 7000;   // 7 secs to probe window size
-        public const int IKCP_PROBE_LIMIT = 120000; // up to 120 secs to probe window
+        public const int IKCP_RTO_NDL = 30;  // no delay min rto 无延迟最小重传时间
+        public const int IKCP_RTO_MIN = 100; // normal min rto 正常最小重传时间
+        public const int IKCP_RTO_DEF = 200; //默认重传时间
+        public const int IKCP_RTO_MAX = 60000; //最大重传时间
+        public const int IKCP_CMD_PUSH = 81; // cmd: push data 命令：推送数据
+        public const int IKCP_CMD_ACK = 82; // cmd: ack 命令：确认
+        public const int IKCP_CMD_WASK = 83; // cmd: window probe (ask) 命令：窗口探测（请求）
+        public const int IKCP_CMD_WINS = 84; // cmd: window size (tell) 命令：窗口大小（通知）
+        public const int IKCP_ASK_SEND = 1;  // need to send IKCP_CMD_WASK 需要发送窗口探测请求
+        public const int IKCP_ASK_TELL = 2;  // need to send IKCP_CMD_WINS 需要发送窗口大小通知
+        public const int IKCP_WND_SND = 32; // 发送窗口大小
+        public const int IKCP_WND_RCV = 32; // 接收窗口大小
+        public const int IKCP_MTU_DEF = 1400; // 默认最大传输单元
+        public const int IKCP_ACK_FAST = 3; //快速确认的数量
+        public const int IKCP_INTERVAL = 100;// 发送间隔
+        public const int IKCP_OVERHEAD = 24;// 协议开销
+        public const int IKCP_DEADLINK = 10;//死链检测阈值
+        public const int IKCP_THRESH_INIT = 2; //初始化阈值
+        public const int IKCP_THRESH_MIN = 2; // 最小阈值
+        public const int IKCP_PROBE_INIT = 7000;   // 7 secs to probe window size 探测窗口大小的初始时间
+        public const int IKCP_PROBE_LIMIT = 120000; // up to 120 secs to probe window 探测窗口大小的最大时间
 
 
         // encode 8 bits unsigned int
@@ -44,6 +45,8 @@ namespace SGF.Network.KCP
         /* encode 16 bits unsigned int (lsb) */
         public static int ikcp_encode16u(byte[] p, int offset, UInt16 w)
         {
+            // 右移 ：00010010 00110100 >> 8 = 00000000 00010010
+            // (byte) 转换时，转换最低的8位
             p[0 + offset] = (byte)(w >> 0);
             p[1 + offset] = (byte)(w >> 8);
             return 2;
@@ -54,6 +57,7 @@ namespace SGF.Network.KCP
         {
             UInt16 result = 0;
             result |= (UInt16)p[0 + offset];
+            // 左移 ：00010010 << 8 = 00010010 00000000
             result |= (UInt16)(p[1 + offset] << 8);
             c = result;
             return 2;
@@ -190,7 +194,10 @@ namespace SGF.Network.KCP
 
         // kcp members.
         UInt32 conv; UInt32 mtu; UInt32 mss; UInt32 state;
-        UInt32 snd_una; UInt32 snd_nxt; UInt32 rcv_nxt;
+        UInt32 snd_una; // snd_una 表示发送缓冲区中已经发送但尚未被接收方确认的第一个数据包
+        UInt32 snd_nxt; // snd_nxt 表示下一个即将发送的数据包的序列号。它指向发送缓冲区中下一个待发送的数据包的序列号
+        UInt32 rcv_nxt; // rcv_nxt表示下一个想要收到的数据包的序列号
+
         UInt32 ts_recent; UInt32 ts_lastack; UInt32 ssthresh;
         UInt32 rx_rttval; UInt32 rx_srtt; UInt32 rx_rto; UInt32 rx_minrto;
         UInt32 snd_wnd; UInt32 rcv_wnd; UInt32 rmt_wnd; UInt32 cwnd; UInt32 probe;
@@ -240,22 +247,23 @@ namespace SGF.Network.KCP
         }
 
         // check the size of next message in the recv queue
+        //检查消息队列中是否有一条完整的消息，并返回其长度
         public int PeekSize()
         {
+    
+            if (0 == rcv_queue.Length) return -1;// 如果接收队列为空，返回 -1
 
-            if (0 == rcv_queue.Length) return -1;
+            var seq = rcv_queue[0];// 获取接收队列中的第一个消息
 
-            var seq = rcv_queue[0];
+            if (0 == seq.frg) return seq.data.Length;// 如果消息不分片，则直接返回其长度
 
-            if (0 == seq.frg) return seq.data.Length;
+            if (rcv_queue.Length < seq.frg + 1) return -1;// 如果队列中的分片数量不足,需要等待继续接收数据，返回 -1
 
-            if (rcv_queue.Length < seq.frg + 1) return -1;
-
+            //走到这代表消息队列中具有一条完整的消息
             int length = 0;
-
             foreach (var item in rcv_queue)
             {
-                length += item.data.Length;
+                length += item.data.Length;// 累加每个消息的长度
                 if (0 == item.frg)
                     break;
             }
@@ -263,23 +271,29 @@ namespace SGF.Network.KCP
             return length;
         }
 
+        //当数据从网络接收时，它首先被存储在 接收缓冲区 中。
+        //从接收缓冲区，数据会进行校验处理并按顺序移动到 接收队列 中。
+        //最后，应用程序将 接收队列 中的整理好的数据 拷贝到用户缓冲区。
+
         // user/upper level recv: returns size, returns below zero for EAGAIN
+        // 将接收队列中已经有序的数据段 移动到用户缓冲区，然后清理接收队列和接收缓存区.
         public int Recv(byte[] buffer)
         {
-
+            // 如果接收队列为空，返回 -1
             if (0 == rcv_queue.Length) return -1;
-
+            // 如果 PeekSize 返回负值，表示需要更多数据，返回 -2
             var peekSize = PeekSize();
             if (0 > peekSize) return -2;
-
+            // 如果可接收的大小超过了缓冲区长度，返回 -3
             if (peekSize > buffer.Length) return -3;
 
-            var fast_recover = false;
+            var fast_recover = false;// 检查是否需要快速恢复
             if (rcv_queue.Length >= rcv_wnd) fast_recover = true;
 
-            // merge fragment.
+            // 合并片段，准备将数据队列中的数据拷贝到用户缓冲区
             var count = 0;
             var n = 0;
+            // 循环将多个数据段 拷贝到 用户缓存区， 合并为一个完整的消息
             foreach (var seg in rcv_queue)
             {
                 Array.Copy(seg.data, 0, buffer, n, seg.data.Length);
@@ -290,17 +304,19 @@ namespace SGF.Network.KCP
 
             if (0 < count)
             {
+                // 移除接收队列中，已经转移到用户缓存区的数据段
                 rcv_queue = slice<Segment>(rcv_queue, count, rcv_queue.Length);
             }
 
             // move available data from rcv_buf -> rcv_queue
+            // 从接收缓冲区移动合法数据到接收队列
             count = 0;
             foreach (var seg in rcv_buf)
             {
                 if (seg.sn == rcv_nxt && rcv_queue.Length < rcv_wnd)
                 {
-                    rcv_queue = append<Segment>(rcv_queue, seg);
-                    rcv_nxt++;
+                    rcv_queue = append<Segment>(rcv_queue, seg);// 将新的片段添加到接收队列
+                    rcv_nxt++;// 更新下一个期望序列号
                     count++;
                 }
                 else
@@ -308,7 +324,7 @@ namespace SGF.Network.KCP
                     break;
                 }
             }
-
+            // 从接收缓冲区中移除已处理的片段
             if (0 < count) rcv_buf = slice<Segment>(rcv_buf, count, rcv_buf.Length);
 
             // fast recover
@@ -316,10 +332,10 @@ namespace SGF.Network.KCP
             {
                 // ready to send back IKCP_CMD_WINS in ikcp_flush
                 // tell remote my window size
-                probe |= IKCP_ASK_TELL;
+                probe |= IKCP_ASK_TELL;// 准备发送窗口大小通知
             }
 
-            return n;
+            return n;// 返回实际接收到的字节数
         }
 
         // user/upper level send, returns below zero for error
@@ -329,12 +345,14 @@ namespace SGF.Network.KCP
             if (0 == bufferSize) return -1;
 
             var count = 0;
-
-            if (bufferSize < mss)
-                count = 1;
+            // 计算需要发送的片段数量 ,bufferSize 指的是要发送的数据大小
+            if (bufferSize < mss) //如果缓冲区大小小于最大分段大小（mss）
+                count = 1;// 只需发送一个片段
             else
-                count = (int)(bufferSize + mss - 1) / (int)mss;
+                count = (int)(bufferSize + mss - 1) / (int)mss;// 计算片段数量，向上取整
 
+            //在许多网络协议中，数据片段的长度通常是由一个字节（8 位）表示的。
+            //一个字节的最大值是 255，因此如果计算出的片段数量超过 255，就无法在一个字节中表示这个数量。
             if (255 < count) return -2;
 
             if (0 == count) count = 1;
@@ -350,9 +368,9 @@ namespace SGF.Network.KCP
                     size = bufferSize - offset;
 
                 var seg = new Segment(size);
-                Array.Copy(buffer, offset, seg.data, 0, size);
+                Array.Copy(buffer, offset, seg.data, 0, size); // 复制数据到新片段
                 offset += size;
-                seg.frg = (UInt32)(count - i - 1);
+                seg.frg = (UInt32)(count - i - 1); // 设置片段的分段标志，指示还有多少片段未发送
                 snd_queue = append<Segment>(snd_queue, seg);
             }
 
@@ -362,48 +380,58 @@ namespace SGF.Network.KCP
         // update ack.
         void update_ack(Int32 rtt)
         {
+            //rx_srtt 是一个平滑RTT，用于计算近期的平均RTT值。用于计算重传超时（RTO）
+            // 如果此时的平滑 RTT（rx_srtt）为 0，表示其尚未初始化
+            //rx_rttval是 RTT 变动值，通常称为 RTT 变动，是指网络延迟（RTT）的波动程度。它用于描述 RTT 的不稳定性
             if (0 == rx_srtt)
             {
-                rx_srtt = (UInt32)rtt;
+                rx_srtt = (UInt32)rtt; // 初始化平滑 RTT 为当前 RTT 值
                 rx_rttval = (UInt32)rtt / 2;
             }
             else
             {
-                Int32 delta = (Int32)((UInt32)rtt - rx_srtt);
+                Int32 delta = (Int32)((UInt32)rtt - rx_srtt);// 计算当前 RTT 与平滑 RTT 之间的差值
                 if (0 > delta) delta = -delta;
 
-                rx_rttval = (3 * rx_rttval + (uint)delta) / 4;
-                rx_srtt = (UInt32)((7 * rx_srtt + rtt) / 8);
+                rx_rttval = (3 * rx_rttval + (uint)delta) / 4; // 更新 RTT 变动值
+                rx_srtt = (UInt32)((7 * rx_srtt + rtt) / 8); // 更新平滑 RTT，
                 if (rx_srtt < 1) rx_srtt = 1;
             }
-
+            // 计算重传超时（RTO），RTO = 平滑 RTT + 最大值(1, 4 * RTT 变动值)
             var rto = (int)(rx_srtt + _imax_(1, 4 * rx_rttval));
-            rx_rto = _ibound_(rx_minrto, (UInt32)rto, IKCP_RTO_MAX);
+            rx_rto = _ibound_(rx_minrto, (UInt32)rto, IKCP_RTO_MAX);// 确保 RTO 在最小值和最大值之间
         }
 
+        // 更新未确认的序列号（snd_una）
         void shrink_buf()
         {
+            // 如果发送缓冲区不为空，将未确认序列号(指的是当前发出的包中，第一个还未收到确认的号)（snd_una）设置为发送缓冲区中第一个数据包的序列号
             if (snd_buf.Length > 0)
                 snd_una = snd_buf[0].sn;
             else
                 snd_una = snd_nxt;
         }
 
+        // 处理收到的ACK确认号
         void parse_ack(UInt32 sn)
         {
-
+            // 确认号无效
             if (_itimediff(sn, snd_una) < 0 || _itimediff(sn, snd_nxt) >= 0) return;
 
             var index = 0;
+            // 遍历发送缓冲区，从发送缓冲区中删除已确认的数据段
             foreach (var seg in snd_buf)
             {
                 if (sn == seg.sn)
                 {
+                    // 把收到确认的数据从发送缓冲区中截掉
                     snd_buf = append<Segment>(slice<Segment>(snd_buf, 0, index), slice<Segment>(snd_buf, index + 1, snd_buf.Length));
                     break;
                 }
-                else
+                else  
                 {
+                    //发送缓冲区中的数据段应该遵循先发先收的原则。也就是说，先发送的数据段应该先接收到确认（ACK）
+                    // 如果序列号不匹配，那么前面被跳过去的数据段都要 增加快速确认计数
                     seg.fastack++;
                 }
 
@@ -411,9 +439,11 @@ namespace SGF.Network.KCP
             }
         }
 
+        // 处理收到的未确认的序列号（UNA），更新发送缓冲区
         void parse_una(UInt32 una)
         {
             var count = 0;
+            // 例如收到的UNA为5，那么表示序列号5之前的数据段(1~4)，都已经被对方收到了，那么可以把他们从发送缓冲区中删去了
             foreach (var seg in snd_buf)
             {
                 if (_itimediff(una, seg.sn) > 0)
@@ -425,6 +455,7 @@ namespace SGF.Network.KCP
             if (0 < count) snd_buf = slice<Segment>(snd_buf, count, snd_buf.Length);
         }
 
+        // 将收到的数据信息包 的序列号 和收到时间存起来
         void ack_push(UInt32 sn, UInt32 ts)
         {
             acklist = append<UInt32>(acklist, new UInt32[2] { sn, ts });
@@ -436,23 +467,29 @@ namespace SGF.Network.KCP
             ts = acklist[p * 2 + 1];
         }
 
+        // 处理接收到的数据段，维护接收缓冲区和接收队列
         void parse_data(Segment newseg)
         {
             var sn = newseg.sn;
+            // 检查序列号是否在有效范围内
+            // 如果序列号超出接收窗口或小于下一个期望的序列号，直接返回
             if (_itimediff(sn, rcv_nxt + rcv_wnd) >= 0 || _itimediff(sn, rcv_nxt) < 0) return;
-
+            
             var n = rcv_buf.Length - 1;
-            var after_idx = -1;
-            var repeat = false;
+            var after_idx = -1; // 初始化插入位置索引
+            var repeat = false;// 标记新段是否重复
+            // 从后向前遍历接收缓冲区
             for (var i = n; i >= 0; i--)
             {
                 var seg = rcv_buf[i];
+                // 检查是否为重复段
                 if (seg.sn == sn)
                 {
+                    //当前收到的数据，已经存在于接受缓冲区,是重复数据
                     repeat = true;
                     break;
                 }
-
+                // 如果新段的序列号大于当前段，即找到了插入位置
                 if (_itimediff(sn, seg.sn) > 0)
                 {
                     after_idx = i;
@@ -460,15 +497,19 @@ namespace SGF.Network.KCP
                 }
             }
 
+            // 如果新段不是重复的
             if (!repeat)
             {
+                // 如果插入索引为 -1，表示新段应该插入在缓冲区的最前面
                 if (after_idx == -1)
                     rcv_buf = append<Segment>(new Segment[1] { newseg }, rcv_buf);
                 else
+                    // 在插入位置后插入新段
                     rcv_buf = append<Segment>(slice<Segment>(rcv_buf, 0, after_idx + 1), append<Segment>(new Segment[1] { newseg }, slice<Segment>(rcv_buf, after_idx + 1, rcv_buf.Length)));
             }
 
             // move available data from rcv_buf -> rcv_queue
+            // 将合法的数据段，从接收缓冲区移动到接收队列
             var count = 0;
             foreach (var seg in rcv_buf)
             {
