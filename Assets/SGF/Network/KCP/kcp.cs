@@ -24,8 +24,8 @@ namespace SGF.Network.KCP
         public const int IKCP_DEADLINK = 10;//死链检测阈值
         public const int IKCP_THRESH_INIT = 2; //初始化阈值
         public const int IKCP_THRESH_MIN = 2; // 最小阈值
-        public const int IKCP_PROBE_INIT = 7000;   // 7 secs to probe window size 探测窗口大小的初始时间
-        public const int IKCP_PROBE_LIMIT = 120000; // up to 120 secs to probe window 探测窗口大小的最大时间
+        public const int IKCP_PROBE_INIT = 7000;   // 7 secs to probe window size 探测对方窗口的最小间隔时间
+        public const int IKCP_PROBE_LIMIT = 120000; // up to 120 secs to probe window 探测对方窗口的最大间隔时间
 
 
         // encode 8 bits unsigned int
@@ -155,18 +155,18 @@ namespace SGF.Network.KCP
         // KCP Segment Definition
         internal class Segment
         {
-            internal UInt32 conv = 0;
-            internal UInt32 cmd = 0;
-            internal UInt32 frg = 0;
-            internal UInt32 wnd = 0;
-            internal UInt32 ts = 0;
-            internal UInt32 sn = 0;
-            internal UInt32 una = 0;
-            internal UInt32 resendts = 0;
-            internal UInt32 rto = 0;
-            internal UInt32 fastack = 0;
-            internal UInt32 xmit = 0;
-            internal byte[] data;
+            internal UInt32 conv = 0;    // 会话标识符
+            internal UInt32 cmd = 0;    // 命令类型（如数据、确认等）
+            internal UInt32 frg = 0;    // 分片标识，表示当前段是否为数据的分片
+            internal UInt32 wnd = 0;    // 窗口大小，表示接收方的接收能力
+            internal UInt32 ts = 0;    // 时间戳，记录发送时间
+            internal UInt32 sn = 0;    // 序列号，标识当前数据段的顺序
+            internal UInt32 una = 0;    // 未确认序列号，表示发送方下一个待确认的序列号
+            internal UInt32 resendts = 0;    // 重发时间戳，用于重传管理
+            internal UInt32 rto = 0;// 超时重传的时间
+            internal UInt32 fastack = 0;  // 快速确认计数，记录快速确认的次数
+            internal UInt32 xmit = 0;    // 发送次数，记录该段的发送次数
+            internal byte[] data;    // 存储数据的字节数组
 
             internal Segment(int size)
             {
@@ -193,32 +193,50 @@ namespace SGF.Network.KCP
         }
 
         // kcp members.
-        UInt32 conv; UInt32 mtu; UInt32 mss; UInt32 state;
-        UInt32 snd_una; // snd_una 表示发送缓冲区中已经发送但尚未被接收方确认的第一个数据包
-        UInt32 snd_nxt; // snd_nxt 表示下一个即将发送的数据包的序列号。它指向发送缓冲区中下一个待发送的数据包的序列号
-        UInt32 rcv_nxt; // rcv_nxt表示下一个想要收到的数据包的序列号
+        UInt32 conv;// 会话 ID，用于区分不同的会话
+        UInt32 mtu;// 最大传输单元
+        UInt32 mss;// 最大分段大小，等于 MTU 减去头部大小
+        UInt32 state;
+        UInt32 snd_una; // snd_una 表示已经发送但尚未被接收方确认的第一个数据包
+        UInt32 snd_nxt; // snd_nxt 发送方下一个要发送的数据包的序列号。它会在每次发送一个新的数据包时递增。
+        UInt32 rcv_nxt; // rcv_nxt 表示下一个想要收到的数据包的序列号。接收方下一个期望接收的序列号
 
-        UInt32 ts_recent; UInt32 ts_lastack; UInt32 ssthresh;
-        UInt32 rx_rttval; UInt32 rx_srtt; UInt32 rx_rto; UInt32 rx_minrto;
-        UInt32 snd_wnd; UInt32 rcv_wnd; UInt32 rmt_wnd; UInt32 cwnd; UInt32 probe;
-        UInt32 current; UInt32 interval; UInt32 ts_flush; UInt32 xmit;
-        UInt32 nodelay; UInt32 updated;
-        UInt32 ts_probe; UInt32 probe_wait;
-        UInt32 dead_link; UInt32 incr;
+        UInt32 ts_recent;
+        UInt32 ts_lastack;
+        UInt32 ssthresh;// 拥塞窗口的阈值(慢启动门限)
+        UInt32 rx_rttval;// RTT 的浮动值
+        UInt32 rx_srtt;// 平滑的 RTT 值
+        UInt32 rx_rto; //计算出的重传超时时间(Retransmission Timeout)
+        UInt32 rx_minrto;// 最小重传超时时间
+        UInt32 snd_wnd;
+        UInt32 rcv_wnd;
+        UInt32 rmt_wnd; // 记录对方的窗口大小
+        UInt32 cwnd; // 拥塞窗口
+        UInt32 probe;// 探测标志位，用于检查是否要进行窗口探测
+        UInt32 current;// 当前时间戳
+        UInt32 interval;// 定时器触发间隔
+        UInt32 ts_flush;// 下次需要触发刷新的时间戳
+        UInt32 xmit;
+        UInt32 nodelay;// 是否启用无延迟模式 
+        UInt32 updated; // 标志位，表示 KCP 是否已经被更新过
+        UInt32 ts_probe;// 下次探测窗口的时间戳 (ms)
+        UInt32 probe_wait; //探测窗口的等待时间(ms)
+        UInt32 dead_link;// 最大重传次数，超过则认为链路中断
+        UInt32 incr;//  增量，用于控制拥塞窗口的增加
 
         Segment[] snd_queue = new Segment[0];
         Segment[] rcv_queue = new Segment[0];
         Segment[] snd_buf = new Segment[0];
         Segment[] rcv_buf = new Segment[0];
 
-        UInt32[] acklist = new UInt32[0];
+        UInt32[] acklist = new UInt32[0];// 存储需要发送的 ACK 序号
 
-        byte[] buffer;
-        Int32 fastresend;
-        Int32 nocwnd;
+        byte[] buffer;// 临时缓冲区，用于存储即将要发送的数据
+        Int32 fastresend;// 快速重传所需次数
+        Int32 nocwnd;// 无拥塞控制标志
         Int32 logmask;
         // buffer, size
-        Action<byte[], int> output;
+        Action<byte[], int> output;// 输出回调函数，用于发送数据
 
         // create a new kcp control object, 'conv' must equal in two endpoint
         // from the same connection.
@@ -339,6 +357,8 @@ namespace SGF.Network.KCP
         }
 
         // user/upper level send, returns below zero for error
+        // 将用户层要发送的数据加入到发送队列
+        //将buffer中的数据切分成一个个的片段，并加入到发送队列
         public int Send(byte[] buffer, int bufferSize)
         {
 
@@ -371,7 +391,7 @@ namespace SGF.Network.KCP
                 Array.Copy(buffer, offset, seg.data, 0, size); // 复制数据到新片段
                 offset += size;
                 seg.frg = (UInt32)(count - i - 1); // 设置片段的分段标志，指示还有多少片段未发送
-                snd_queue = append<Segment>(snd_queue, seg);
+                snd_queue = append<Segment>(snd_queue, seg); 
             }
 
             return 0;
@@ -402,10 +422,10 @@ namespace SGF.Network.KCP
             rx_rto = _ibound_(rx_minrto, (UInt32)rto, IKCP_RTO_MAX);// 确保 RTO 在最小值和最大值之间
         }
 
-        // 更新未确认的序列号（snd_una）
+        // 更新自己的未确认的序列号（snd_una）
         void shrink_buf()
         {
-            // 如果发送缓冲区不为空，将未确认序列号(指的是当前发出的包中，第一个还未收到确认的号)（snd_una）设置为发送缓冲区中第一个数据包的序列号
+            // 如果发送缓冲区不为空，将（snd_una）设置为发送缓冲区中第一个数据包的序列号
             if (snd_buf.Length > 0)
                 snd_una = snd_buf[0].sn;
             else
@@ -455,12 +475,12 @@ namespace SGF.Network.KCP
             if (0 < count) snd_buf = slice<Segment>(snd_buf, count, snd_buf.Length);
         }
 
-        // 将收到的数据信息包 的序列号 和收到时间存起来
+        // 将收到的数据信息包 的序列号 和收到时间存起来,为了后续给对方发送ACK包
         void ack_push(UInt32 sn, UInt32 ts)
         {
             acklist = append<UInt32>(acklist, new UInt32[2] { sn, ts });
         }
-
+        // 得到ackList中的第p组数据，一组数据包含两个值:序列号和时间戳
         void ack_get(int p, ref UInt32 sn, ref UInt32 ts)
         {
             sn = acklist[p * 2 + 0];
@@ -497,7 +517,7 @@ namespace SGF.Network.KCP
                 }
             }
 
-            // 如果新段不是重复的
+            // 如果新段不是重复的,将新数据段插入到接收缓冲区
             if (!repeat)
             {
                 // 如果插入索引为 -1，表示新段应该插入在缓冲区的最前面
@@ -532,10 +552,12 @@ namespace SGF.Network.KCP
         }
 
         // when you received a low level packet (eg. UDP packet), call it
+        // 当你收到一个低级数据包（例如 UDP 数据包）时，调用此方法
         public int Input(byte[] data)
         {
-
+            // 记录自己的未确认序列号的初始值
             var s_una = snd_una;
+            // 如果接收到的数据长度小于协议头部开销，则返回 0
             if (data.Length < IKCP_OVERHEAD) return 0;
 
             var offset = 0;
@@ -553,12 +575,14 @@ namespace SGF.Network.KCP
                 byte cmd = 0;
                 byte frg = 0;
 
+                // 检查是否有足够的数据用于解析头部
                 if (data.Length - offset < IKCP_OVERHEAD) break;
 
                 offset += ikcp_decode32u(data, offset, ref conv_);
 
+                // 检查会话Id是否匹配
                 if (conv != conv_) return -1;
-
+                // 解码协议头部数据
                 offset += ikcp_decode8u(data, offset, ref cmd);
                 offset += ikcp_decode8u(data, offset, ref frg);
                 offset += ikcp_decode16u(data, offset, ref wnd);
@@ -567,6 +591,8 @@ namespace SGF.Network.KCP
                 offset += ikcp_decode32u(data, offset, ref una);
                 offset += ikcp_decode32u(data, offset, ref length);
 
+                // data.Length - offset: 计算从当前偏移量到数据包末尾的可用字节数。这表示除去头部长度后，实际的数据信息长度。
+                // 如果实际的数据信息长度小于头部记录的length，说明数据不完整，无法继续处理。
                 if (data.Length - offset < length) return -2;
 
                 switch (cmd)
@@ -579,9 +605,11 @@ namespace SGF.Network.KCP
                     default:
                         return -3;
                 }
-
+                // 更新远程窗口大小
                 rmt_wnd = (UInt32)wnd;
+                // 解析收到的未确认的序列号（UNA），更新发送缓冲区
                 parse_una(una);
+                // 更新自己的未确认序列号
                 shrink_buf();
 
                 if (IKCP_CMD_ACK == cmd)
@@ -590,14 +618,18 @@ namespace SGF.Network.KCP
                     {
                         update_ack(_itimediff(current, ts));
                     }
+                    // 解析收到的ACK确认号,更新发送缓冲区
                     parse_ack(sn);
                     shrink_buf();
                 }
                 else if (IKCP_CMD_PUSH == cmd)
                 {
+                    // 检查序列号是否在自己的接收窗口内 ( sn - rcv_nxt < rcv_wnd )
                     if (_itimediff(sn, rcv_nxt + rcv_wnd) < 0)
                     {
+                        // 将序列号和时间戳存入 ACK 列表
                         ack_push(sn, ts);
+                        // 如果当前序列号在期望序列号后面
                         if (_itimediff(sn, rcv_nxt) >= 0)
                         {
                             var seg = new Segment((int)length);
@@ -610,17 +642,20 @@ namespace SGF.Network.KCP
                             seg.una = una;
 
                             if (length > 0) Array.Copy(data, offset, seg.data, 0, length);
-
+                            // 解析新的数据段，并将其加入接收缓冲区
                             parse_data(seg);
                         }
                     }
                 }
+                // 处理对方发来窗口探测命令
                 else if (IKCP_CMD_WASK == cmd)
                 {
                     // ready to send back IKCP_CMD_WINS in Ikcp_flush
                     // tell remote my window size
+                    // 更新标识符，准备在 ikcp_flush 中发送窗口大小命令
                     probe |= IKCP_ASK_TELL;
                 }
+                // 处理对方发来的窗口大小 命令
                 else if (IKCP_CMD_WINS == cmd)
                 {
                     // do nothing
@@ -633,17 +668,21 @@ namespace SGF.Network.KCP
                 offset += (int)length;
             }
 
+            // 检查自己的未确认的序列号是否发生变化,如果增大了，说明对方接收了数据
             if (_itimediff(snd_una, s_una) > 0)
             {
+                // 如果拥塞窗口小于远程窗口，说明可以增加发送的数据量
                 if (cwnd < rmt_wnd)
                 {
                     var mss_ = mss;
+                    //检查 cwnd 是否小于 ssthresh。如果是，表示协议在慢启动阶段。
                     if (cwnd < ssthresh)
                     {
                         cwnd++;
                         incr += mss_;
                     }
-                    else
+                    // 处于拥塞避免阶段
+                    else 
                     {
                         if (incr < mss_)
                         {
@@ -654,6 +693,7 @@ namespace SGF.Network.KCP
                     }
                     if (cwnd > rmt_wnd)
                     {
+                        // 确保拥塞窗口小于等于远程的接收窗口
                         cwnd = rmt_wnd;
                         incr = rmt_wnd * mss_;
                     }
@@ -663,6 +703,7 @@ namespace SGF.Network.KCP
             return 0;
         }
 
+        // 返回自己接收窗口的剩余空间
         Int32 wnd_unused()
         {
             if (rcv_queue.Length < rcv_wnd)
@@ -671,15 +712,20 @@ namespace SGF.Network.KCP
         }
 
         // flush pending data
+        //将待发送的数据从发送缓冲区发往网络，同时处理窗口探测、丢包重传、快速重传等逻辑。它是 KCP 协议中实现可靠传输的关键部分。
         void flush()
         {
-            var current_ = current;
-            var buffer_ = buffer;
-            var change = 0;
-            var lost = 0;
+
+            var current_ = current;  // 当前时间戳
+            var buffer_ = buffer;   // 临时缓冲区，用于存储待发送的数据包
+
+            // 标记变量，用于记录是否发生了数据丢失或者快速重传
+            var change = 0; // 表示快速重传发生的次数
+            var lost = 0; // 表示数据丢失的标志
 
             if (0 == updated) return;
 
+            // 创建一个临时段，用于构造 ACK 和其他控制包
             var seg = new Segment(0);
             seg.conv = conv;
             seg.cmd = IKCP_CMD_ACK;
@@ -687,53 +733,62 @@ namespace SGF.Network.KCP
             seg.una = rcv_nxt;
 
             // flush acknowledges
-            var count = acklist.Length / 2;
+            //1.发送ackList中所有的ACK包
+            var count = acklist.Length / 2; // ACK 列表中有多少个 ACK（每个 ACK 包含两个值：序列号和时间戳）
             var offset = 0;
+            // 将多个ACK包合并为一个buffer然后一起发送
             for (var i = 0; i < count; i++)
             {
+                // 对于ack包，只需要占用一个包头的大小，因此判断此时offset + 包头大小 如果超过mtu，就先把buffer里面的数据发掉
+                // 即 need = IKCP_OVERHEAD
                 if (offset + IKCP_OVERHEAD > mtu)
                 {
                     output(buffer, offset);
                     //Array.Clear(buffer, 0, offset);
-                    offset = 0;
+                    offset = 0; // !!!这里只需要重置offset的位置即可，新的数据会从offset处存入buffer,就会覆盖掉旧数据
                 }
                 ack_get(i, ref seg.sn, ref seg.ts);
                 offset += seg.encode(buffer, offset);
             }
-            acklist = new UInt32[0];
+            acklist = new UInt32[0]; // 清空ackList
 
             // probe window size (if remote window size equals zero)
+            // 2.处理窗口探测（如果远程接收窗口为零的话)
             if (0 == rmt_wnd)
             {
+                // 如果尚未设置窗口探测等待时间，初始化探测等待时间
                 if (0 == probe_wait)
                 {
                     probe_wait = IKCP_PROBE_INIT;
-                    ts_probe = current + probe_wait;
+                    ts_probe = current + probe_wait;// 设置下一次探测的时间戳
                 }
                 else
                 {
+                    // 检查是否到了探测时间
                     if (_itimediff(current, ts_probe) >= 0)
                     {
                         if (probe_wait < IKCP_PROBE_INIT)
                             probe_wait = IKCP_PROBE_INIT;
-                        probe_wait += probe_wait / 2;
+                        probe_wait += probe_wait / 2; // 增加探测时间间隔
                         if (probe_wait > IKCP_PROBE_LIMIT)
                             probe_wait = IKCP_PROBE_LIMIT;
-                        ts_probe = current + probe_wait;
-                        probe |= IKCP_ASK_SEND;
+                        ts_probe = current + probe_wait;// 更新下一次探测时间
+                        probe |= IKCP_ASK_SEND; // 设置探测标志，准备发送窗口探测包
                     }
                 }
             }
-            else
+            else// 如果远程窗口大于0，重置探测等待时间
             {
                 ts_probe = 0;
                 probe_wait = 0;
             }
 
             // flush window probing commands
+            // 3.发送窗口探测包
             if ((probe & IKCP_ASK_SEND) != 0)
             {
                 seg.cmd = IKCP_CMD_WASK;
+                //如果当前buffer缓存区的内容已满,则先发送
                 if (offset + IKCP_OVERHEAD > (int)mtu)
                 {
                     output(buffer, offset);
@@ -743,16 +798,20 @@ namespace SGF.Network.KCP
                 offset += seg.encode(buffer, offset);
             }
 
+            // 清除探测标志
             probe = 0;
 
             // calculate window size
+            // 4.计算发送窗口大小，取本地发送窗口和远程接收窗口和拥塞窗口 三者的最小值
             var cwnd_ = _imin_(snd_wnd, rmt_wnd);
             if (0 == nocwnd)
                 cwnd_ = _imin_(cwnd, cwnd_);
 
+            // 5.从发送队列移动数据到发送缓冲区
             count = 0;
             for (var k = 0; k < snd_queue.Length; k++)
             {
+                // 如果发送缓冲区中的数据已经达到窗口容量，则停止发送
                 if (_itimediff(snd_nxt, snd_una + cwnd_) >= 0) break;
 
                 var newseg = snd_queue[k];
@@ -763,30 +822,35 @@ namespace SGF.Network.KCP
                 newseg.sn = snd_nxt;
                 newseg.una = rcv_nxt;
                 newseg.resendts = current_;
-                newseg.rto = rx_rto;
+                newseg.rto = rx_rto;// 设置重传超时时间
                 newseg.fastack = 0;
-                newseg.xmit = 0;
+                newseg.xmit = 0;// 发送次数清零
                 snd_buf = append<Segment>(snd_buf, newseg);
                 snd_nxt++;
                 count++;
             }
-
+            // 从发送队列中移除已移动到发送缓冲区的数据段
             if (0 < count)
             {
                 snd_queue = slice<Segment>(snd_queue, count, snd_queue.Length);
             }
 
             // calculate resent
-            var resent = (UInt32)fastresend;
+            // 6.处理重传逻辑
+      
+            var resent = (UInt32)fastresend;  // 快速重传的阈值(略过几次进行快速重传)
             if (fastresend <= 0) resent = 0xffffffff;
+            // 最小重传时间
             var rtomin = rx_rto >> 3;
             if (nodelay != 0) rtomin = 0;
 
             // flush data segments
+            // 7.遍历发送缓冲区，检查哪些数据需要发送或重传，并进行发送
             foreach (var segment in snd_buf)
             {
                 var needsend = false;
                 var debug = _itimediff(current_, segment.resendts);
+                // 如果是还没有发送过该片段，立即发送
                 if (0 == segment.xmit)
                 {
                     needsend = true;
@@ -794,6 +858,7 @@ namespace SGF.Network.KCP
                     segment.rto = rx_rto;
                     segment.resendts = current_ + segment.rto + rtomin;
                 }
+                // 如果当前时间 超过了 片段的重传时间戳，重传数据
                 else if (_itimediff(current_, segment.resendts) >= 0)
                 {
                     needsend = true;
@@ -803,16 +868,18 @@ namespace SGF.Network.KCP
                         segment.rto += rx_rto;
                     else
                         segment.rto += rx_rto / 2;
+                    // 更新下次重传时间戳
                     segment.resendts = current_ + segment.rto;
-                    lost = 1;
+                    lost = 1;// 标记丢包
                 }
+                // 如果达到快速重传阈值，重传数据
                 else if (segment.fastack >= resent)
                 {
                     needsend = true;
                     segment.xmit++;
                     segment.fastack = 0;
                     segment.resendts = current_ + segment.rto;
-                    change++;
+                    change++;// 标记快速重传
                 }
 
                 if (needsend)
@@ -835,7 +902,7 @@ namespace SGF.Network.KCP
                         Array.Copy(segment.data, 0, buffer, offset, segment.data.Length);
                         offset += segment.data.Length;
                     }
-
+                    // 如果发送次数超过死链阈值，标记连接状态为 0
                     if (segment.xmit >= dead_link)
                     {
                         state = 0;
@@ -844,6 +911,7 @@ namespace SGF.Network.KCP
             }
 
             // flash remain segments
+            // 7.发送剩余数据
             if (offset > 0)
             {
                 output(buffer, offset);
@@ -852,6 +920,7 @@ namespace SGF.Network.KCP
             }
 
             // update ssthresh
+            // 8.更新拥塞窗口和相关参数
             if (change != 0)
             {
                 var inflight = snd_nxt - snd_una;
@@ -862,12 +931,13 @@ namespace SGF.Network.KCP
                 incr = cwnd * mss;
             }
 
+            // 遇到丢包，缩小慢启动阈值
             if (lost != 0)
             {
-                ssthresh = cwnd / 2;
+                ssthresh = cwnd / 2;  // 慢启动阈值设为当前拥塞窗口的一半
                 if (ssthresh < IKCP_THRESH_MIN)
                     ssthresh = IKCP_THRESH_MIN;
-                cwnd = 1;
+                cwnd = 1;// 拥塞窗口重置为 1
                 incr = mss;
             }
 
@@ -883,28 +953,33 @@ namespace SGF.Network.KCP
         // 'current' - current timestamp in millisec.
         public void Update(UInt32 current_)
         {
-
+            // 更新当前时间戳
             current = current_;
 
+            // 如果还未更新过
             if (0 == updated)
             {
                 updated = 1;
-                ts_flush = current;
+                ts_flush = current;// 设置刷新时间戳为当前时间
             }
-
+            // 计算当前时间与上次刷新时间的差值
             var slap = _itimediff(current, ts_flush);
 
+            // 检查时间差是否超出合理范围
             if (slap >= 10000 || slap < -10000)
             {
+                // 如果超出范围，则重置刷新时间戳为当前时间
                 ts_flush = current;
                 slap = 0;
             }
 
             if (slap >= 0)
             {
+                // 增加刷新时间戳，准备下一次刷新
                 ts_flush += interval;
+                // 如果当前时间已经超过了新的刷新时间
                 if (_itimediff(current, ts_flush) >= 0)
-                    ts_flush = current + interval;
+                    ts_flush = current + interval;// 将刷新时间戳更新为当前时间加上间隔
                 flush();
             }
         }
@@ -916,25 +991,30 @@ namespace SGF.Network.KCP
         // Important to reduce unnacessary ikcp_update invoking. use it to
         // schedule ikcp_update (eg. implementing an epoll-like mechanism,
         // or optimize ikcp_update when handling massive kcp connections)
+        // 得到下次刷新的时间
         public UInt32 Check(UInt32 current_)
         {
 
             if (0 == updated) return current_;
-
+            // 获取下次刷新时间戳
             var ts_flush_ = ts_flush;
-            var tm_flush_ = 0x7fffffff;
-            var tm_packet = 0x7fffffff;
-            var minimal = 0;
-
+            var tm_flush_ = 0x7fffffff;// 下个刷新时间 和 现在时间的差值
+            var tm_packet = 0x7fffffff;// 下个重传时间 和 现在时间的差值
+            var minimal = 0;// 最小等待时间
+            // 检查当前时间与上次刷新时间的差值，如果时间差超过 10 秒，重置刷新时间为当前时间
             if (_itimediff(current_, ts_flush_) >= 10000 || _itimediff(current_, ts_flush_) < -10000)
             {
                 ts_flush_ = current_;
             }
 
+            // 当前时间已经超过了下次刷新的时间,直接返回现在时间
             if (_itimediff(current_, ts_flush_) >= 0) return current_;
 
+            // 获取
             tm_flush_ = (int)_itimediff(ts_flush_, current_);
 
+            // 遍历发送缓冲区中的所有数据包， 如果重发时间已到，返回当前时间
+            // 否则 ，找出每个重传时间与现在时间最小的差值tm_packet
             foreach (var seg in snd_buf)
             {
                 var diff = _itimediff(seg.resendts, current_);
@@ -942,6 +1022,7 @@ namespace SGF.Network.KCP
                 if (diff < tm_packet) tm_packet = (int)diff;
             }
 
+            // 从下次刷新时间 和 下个重传时间 中选择较小的，作为真正的下次刷新时间
             minimal = (int)tm_packet;
             if (tm_packet >= tm_flush_) minimal = (int)tm_flush_;
             if (minimal >= interval) minimal = (int)interval;
@@ -984,16 +1065,19 @@ namespace SGF.Network.KCP
         // nc: 0:normal congestion control(default), 1:disable congestion control
         public int NoDelay(int nodelay_, int interval_, int resend_, int nc_)
         {
-
+            // 设置无延迟模式
             if (nodelay_ > 0)
             {
+                // 更新无延迟标志
                 nodelay = (UInt32)nodelay_;
+                // 若启用无延迟，设置最小重传超时时间
                 if (nodelay_ != 0)
                     rx_minrto = IKCP_RTO_NDL;
                 else
                     rx_minrto = IKCP_RTO_MIN;
             }
 
+            // 设置刷新时间间隔
             if (interval_ >= 0)
             {
                 if (interval_ > 5000)

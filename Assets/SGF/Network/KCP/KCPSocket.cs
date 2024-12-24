@@ -97,12 +97,14 @@ namespace SGF.Network.KCP
             m_AddrFamily = family;
             m_KcpKey = kcpKey;
             m_ListKcp = new List<KCPProxy>();
-
+            Debug.LogWarning("bindPort1 : " + bindPort);
             m_SystemSocket = new Socket(m_AddrFamily, SocketType.Dgram, ProtocolType.Udp);
             IPEndPoint ipep = GetIPEndPointAny(m_AddrFamily, bindPort);
+            Debug.LogWarning("IPEndPoint : " +ipep.Address + "  " +ipep.Port);
             m_SystemSocket.Bind(ipep);
 
             bindPort = (m_SystemSocket.LocalEndPoint as IPEndPoint).Port;
+            Debug.LogWarning("bindPort2 : " + bindPort);
             LOG_TAG = "KCPSocket[" + bindPort + "-" + kcpKey + "]";
 
             m_IsRunning = true;
