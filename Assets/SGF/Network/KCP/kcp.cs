@@ -294,6 +294,7 @@ namespace SGF.Network.KCP
         //最后，应用程序将 接收队列 中的整理好的数据 拷贝到用户缓冲区。
 
         // user/upper level recv: returns size, returns below zero for EAGAIN
+        // 接受队列 -> 应用
         // 将接收队列中已经有序的数据段 移动到用户缓冲区，然后清理接收队列和接收缓存区.
         public int Recv(byte[] buffer)
         {
@@ -357,7 +358,7 @@ namespace SGF.Network.KCP
         }
 
         // user/upper level send, returns below zero for error
-        // 将用户层要发送的数据加入到发送队列
+        // 应用 -> 发送队列。 将应用层要发送的数据加入到发送队列
         //将buffer中的数据切分成一个个的片段，并加入到发送队列
         public int Send(byte[] buffer, int bufferSize)
         {
@@ -552,6 +553,7 @@ namespace SGF.Network.KCP
         }
 
         // when you received a low level packet (eg. UDP packet), call it
+        // UDP包 -> 接收缓冲区 -> 接收队列
         // 当你收到一个低级数据包（例如 UDP 数据包）时，调用此方法
         public int Input(byte[] data)
         {
@@ -627,7 +629,7 @@ namespace SGF.Network.KCP
                     // 检查序列号是否在自己的接收窗口内 ( sn - rcv_nxt < rcv_wnd )
                     if (_itimediff(sn, rcv_nxt + rcv_wnd) < 0)
                     {
-                        // 将序列号和时间戳存入 ACK 列表
+                        // 将序列号和时间戳存入ackList , 后续给对方回应ack
                         ack_push(sn, ts);
                         // 如果当前序列号在期望序列号后面
                         if (_itimediff(sn, rcv_nxt) >= 0)
@@ -712,6 +714,7 @@ namespace SGF.Network.KCP
         }
 
         // flush pending data
+        //发送队列 -> 发送缓冲区 -> UDP包
         //将待发送的数据从发送缓冲区发往网络，同时处理窗口探测、丢包重传、快速重传等逻辑。它是 KCP 协议中实现可靠传输的关键部分。
         void flush()
         {
@@ -807,6 +810,7 @@ namespace SGF.Network.KCP
             if (0 == nocwnd)
                 cwnd_ = _imin_(cwnd, cwnd_);
 
+            // 发送队列 -> 发送缓冲区
             // 5.从发送队列移动数据到发送缓冲区
             count = 0;
             for (var k = 0; k < snd_queue.Length; k++)
@@ -845,7 +849,8 @@ namespace SGF.Network.KCP
             if (nodelay != 0) rtomin = 0;
 
             // flush data segments
-            // 7.遍历发送缓冲区，检查哪些数据需要发送或重传，并进行发送
+            // 发送缓冲区 -> UDP包
+            // 7.遍历发送缓冲区，发送新数据，并检查哪些数据需要重传
             foreach (var segment in snd_buf)
             {
                 var needsend = false;
