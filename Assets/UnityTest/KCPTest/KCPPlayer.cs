@@ -31,7 +31,7 @@ namespace Assets.UnityTest.KCPTest
             m_Socket.AddReceiveListener(KCPSocket.IPEP_Any, OnReceiveAny);
             m_Socket.AddReceiveListener(m_RemotePoint, OnReceive);
 
-            this.Log("Init() name:{0}, localPort:{1}, remotePort:{2}",name, localPort, remotePort );
+            //this.Log("Init() name:{0}, localPort:{1}, remotePort:{2}", name, localPort, remotePort);
         }
 
         private void OnReceiveAny(byte[] buffer, int size, IPEndPoint remotePoint)
@@ -43,7 +43,12 @@ namespace Assets.UnityTest.KCPTest
         private void OnReceive(byte[] buffer, int size, IPEndPoint remotePoint)
         {
             string str = Encoding.UTF8.GetString(buffer, 0, size);
-            this.Log($" {LOG_TAG} : OnReceive(){remotePoint.Address} \n {str}");
+            this.Log($"OnReceive : {remotePoint.Address} \n {str}");
+
+            var infos = str.Split("_");
+            GameObject cube = GameObject.Find(infos[0]);
+            cube.transform.Translate(new Vector3(float.Parse(infos[1]),float.Parse( infos[2]), float.Parse(infos[3])));
+
         }
 
         public void OnUpdate()
@@ -53,13 +58,21 @@ namespace Assets.UnityTest.KCPTest
                 m_Socket.Update();
             }
         }
-
         public void SendMessage()
         {
             if (m_Socket != null)
             {
                 m_MsgId++;
                 m_Socket.SendTo(m_Name + "_" + "Message" + m_MsgId, m_RemotePoint);
+            }
+        }
+        public void SendMessage(Vector3 move)
+        {
+            if (m_Socket != null)
+            {
+                m_MsgId++;
+                //m_Socket.SendTo(m_Name + "_" + "Message" + m_MsgId, m_RemotePoint);
+                m_Socket.SendTo($"{m_Name}_{move.x}_{move.y}_{move.z}", m_RemotePoint);
             }
         }
     }

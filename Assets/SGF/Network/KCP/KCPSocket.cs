@@ -522,7 +522,7 @@ namespace SGF.Network.KCP
                 m_Kcp.Update(currentTimeMS);
                 m_NextKcpUpdateTime = m_Kcp.Check(currentTimeMS);
                 m_NeedKcpUpdateFlag = false;
-                Debug.Log($"m_Socket:{(m_Socket.LocalEndPoint as IPEndPoint).Port}:  {m_Kcp.rx_srtt} ms");
+                //Debug.Log($"m_Socket:{(m_Socket.LocalEndPoint as IPEndPoint).Port}:  {m_Kcp.rx_srtt} ms");
             }
         }
 
