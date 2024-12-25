@@ -19,8 +19,7 @@ namespace SGF.Network.KCP
     {
 
         private Queue mConsumeQueue;
-        private Queue mProduceQueue;
-
+        private Queue mProduceQueue;  
         public SwitchQueue()
         {
             mConsumeQueue = new Queue(16);

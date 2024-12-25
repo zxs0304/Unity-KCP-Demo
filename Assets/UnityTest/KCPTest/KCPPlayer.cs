@@ -23,6 +23,7 @@ namespace Assets.UnityTest.KCPTest
             LOG_TAG = "KCPPlayer[" + m_Name + "]";
 
             //IPAddress ipa = IPAddress.Parse(Network.player.ipAddress);
+            // 对方的ip 和 对方的端口
             IPAddress ipa = IPAddress.Parse("127.0.0.1");
             m_RemotePoint = new IPEndPoint(ipa, remotePort);
 
@@ -35,14 +36,14 @@ namespace Assets.UnityTest.KCPTest
 
         private void OnReceiveAny(byte[] buffer, int size, IPEndPoint remotePoint)
         {
-            string str = Encoding.UTF8.GetString(buffer, 0, size);
-            this.Log("OnReceiveAny() " + remotePoint + ":" + str);
+            //string str = Encoding.UTF8.GetString(buffer, 0, size);
+            //this.Log("OnReceiveAny() " + remotePoint + ":" + str);
         }
 
         private void OnReceive(byte[] buffer, int size, IPEndPoint remotePoint)
         {
             string str = Encoding.UTF8.GetString(buffer, 0, size);
-            this.Log("OnReceive() " + remotePoint + ":" + str);
+            this.Log($" {LOG_TAG} : OnReceive(){remotePoint.Address} \n {str}");
         }
 
         public void OnUpdate()

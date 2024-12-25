@@ -1,29 +1,24 @@
-﻿////////////////////////////////////////////////////////////////////
-//                            _ooOoo_                             //
-//                           o8888888o                            //
-//                           88" . "88                            //
-//                           (| ^_^ |)                            //
-//                           O\  =  /O                            //
-//                        ____/`---'\____                         //
-//                      .'  \\|     |//  `.                       //
-//                     /  \\|||  :  |||//  \                      //
-//                    /  _||||| -:- |||||-  \                     //
-//                    |   | \\\  -  /// |   |                     //
-//                    | \_|  ''\---/''  |   |                     //
-//                    \  .-\__  `-`  ___/-. /                     //
-//                  ___`. .'  /--.--\  `. . ___                   //
-//                ."" '<  `.___\_<|>_/___.'  >'"".                //
-//              | | :  `- \`.;`\ _ /`;.`/ - ` : | |               //
-//              \  \ `-.   \_ __\ /__ _/   .-` /  /               //
-//        ========`-.____`-.___\_____/___.-`____.-'========       //
-//                             `=---='                            //
-//        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^      //
-//            佛祖保佑       无BUG        不修改                   //
-////////////////////////////////////////////////////////////////////
+﻿
 /*
  * 描述：
- * 作者：slicol
+ * 作者：slicol , zxs
 */
+//发送： KCPPlayer.SendMessage  ->  KCPSocket.SendTo  ->  KCPProxy.Dosend  ->  kcp.Send  ->  kcp.flush  ->  KCPProxy.HandleKcpSend  ->  发送UDP包
+//接收： UDP包  ->  KCPSocket.DoReceive  ->  KCPProxy.DoReceiveInThread  ->  KCPProxy.HandleRecvQueue  ->  kcp.Input  ->  kcp.Recv  ->  KCPPlayer.OnReceive
+
+//主线程中执行的函数
+//KCPSocket.Update()
+//KCPProxy.Update()
+//KCPProxy.HandleRecvQueue()。
+//KCP.Input() 和 KCP.Recv()
+//KCP.Update()
+
+//接收线程中执行的函数
+//KCPSocket.Thread_Recv()
+//循环调用 KCPSocket.DoReceive()：
+//m_SystemSocket.ReceiveFrom() 接收 UDP 数据包。
+//调用 KCPProxy.DoReceiveInThread()：将数据包推送到SwitchQueue中。
+
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -31,7 +26,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using UnityEngine;
-
 namespace SGF.Network.KCP
 {
     public class KCPSocket
@@ -244,6 +238,7 @@ namespace SGF.Network.KCP
 
         //=================================================================================
         #region 发送逻辑
+        // 根据发送目标的ip,找到对应的kcp代理，把要发的数据传给kcp代理来处理发送
         public bool SendTo(byte[] buffer, int size, IPEndPoint remotePoint)
         {
             if (remotePoint.Address == IPAddress.Broadcast)
@@ -295,7 +290,7 @@ namespace SGF.Network.KCP
 
         //=================================================================================
         #region 接收逻辑
-
+        // 当收到remotePoint发来的消息时，使用listener进行处理
         public void AddReceiveListener(IPEndPoint remotePoint, KCPReceiveListener listener)
         {
             KCPProxy proxy = GetKcp(remotePoint);
@@ -322,15 +317,15 @@ namespace SGF.Network.KCP
             }
         }
 
-        public void AddReceiveListener(KCPReceiveListener listener)
-        {
-            m_AnyEPListener += listener;
-        }
+        //public void AddReceiveListener(KCPReceiveListener listener)
+        //{
+        //    m_AnyEPListener += listener;
+        //}
 
-        public void RemoveReceiveListener(KCPReceiveListener listener)
-        {
-            m_AnyEPListener -= listener;
-        }
+        //public void RemoveReceiveListener(KCPReceiveListener listener)
+        //{
+        //    m_AnyEPListener -= listener;
+        //}
 
 
         private void OnReceiveAny(byte[] buffer, int size,   IPEndPoint remotePoint)
@@ -366,6 +361,7 @@ namespace SGF.Network.KCP
             this.Log("Thread_Recv() End!");
         }
 
+        // Socket收到UDP包，根据对方的IP找到对应的KCP代理，把udp包交给kcp代理进行接收处理
         private void DoReceive()
         {
             if (m_SystemSocket.Available <= 0)
@@ -484,6 +480,7 @@ namespace SGF.Network.KCP
             while (!m_RecvQueue.Empty())
             {
                 var recvBufferRaw = m_RecvQueue.Pop();
+                // 将socket收到的UDP包进行kcp加工后，存入接收队列
                 int ret = m_Kcp.Input(recvBufferRaw);
 
                 //收到的不是一个正确的KCP包
@@ -498,6 +495,7 @@ namespace SGF.Network.KCP
 
                 m_NeedKcpUpdateFlag = true;
 
+                // 检查 接收队列 中，如果有一条完整的消息，就接收出来，交给用户层的接收函数处理
                 for (int size = m_Kcp.PeekSize(); size > 0; size = m_Kcp.PeekSize())
                 {
                     var recvBuffer = new byte[size];
@@ -513,6 +511,8 @@ namespace SGF.Network.KCP
         }
 
         //---------------------------------------------
+        // 进行真正的接收（HandleRecvQueue）
+        // 进行真正的发送（m_Kcp.Update中进行Flush）
         public void Update(uint currentTimeMS)
         {
             HandleRecvQueue();
@@ -522,6 +522,7 @@ namespace SGF.Network.KCP
                 m_Kcp.Update(currentTimeMS);
                 m_NextKcpUpdateTime = m_Kcp.Check(currentTimeMS);
                 m_NeedKcpUpdateFlag = false;
+                Debug.Log($"m_Socket:{(m_Socket.LocalEndPoint as IPEndPoint).Port}:  {m_Kcp.rx_srtt} ms");
             }
         }
 

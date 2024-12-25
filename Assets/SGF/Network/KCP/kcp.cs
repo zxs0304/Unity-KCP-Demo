@@ -197,15 +197,17 @@ namespace SGF.Network.KCP
         UInt32 mtu;// 最大传输单元
         UInt32 mss;// 最大分段大小，等于 MTU 减去头部大小
         UInt32 state;
-        UInt32 snd_una; // snd_una 表示已经发送但尚未被接收方确认的第一个数据包
-        UInt32 snd_nxt; // snd_nxt 发送方下一个要发送的数据包的序列号。它会在每次发送一个新的数据包时递增。
-        UInt32 rcv_nxt; // rcv_nxt 表示下一个想要收到的数据包的序列号。接收方下一个期望接收的序列号
+
+        //这三者的具体意义可以看这篇文章中的图: https://blog.csdn.net/weixin_37604985/article/details/134301949
+        UInt32 snd_una; //表示已经发送但尚未被接收方确认的第一个数据包。也是发送窗口中的最左边的序列号。
+        UInt32 snd_nxt; //表示发送方下一个要发送的数据包的序列号。它会在每次发送一个新的数据包时递增。 
+        UInt32 rcv_nxt; //表示接收方下一个想要收到的数据包的序列号。
 
         UInt32 ts_recent;
         UInt32 ts_lastack;
         UInt32 ssthresh;// 拥塞窗口的阈值(慢启动门限)
         UInt32 rx_rttval;// RTT 的浮动值
-        UInt32 rx_srtt;// 平滑的 RTT 值
+        public UInt32 rx_srtt;// 平滑的 RTT 值
         UInt32 rx_rto; //计算出的重传超时时间(Retransmission Timeout)
         UInt32 rx_minrto;// 最小重传超时时间
         UInt32 snd_wnd;
@@ -295,7 +297,7 @@ namespace SGF.Network.KCP
 
         // user/upper level recv: returns size, returns below zero for EAGAIN
         // 接受队列 -> 应用
-        // 将接收队列中已经有序的数据段 移动到用户缓冲区，然后清理接收队列和接收缓存区.
+        // 将接收队列中已经有序的数据段合并为一条完整的消息，并移动到用户缓冲区，然后清理接收队列和接收缓存区.
         public int Recv(byte[] buffer)
         {
             // 如果接收队列为空，返回 -1
@@ -996,7 +998,7 @@ namespace SGF.Network.KCP
         // Important to reduce unnacessary ikcp_update invoking. use it to
         // schedule ikcp_update (eg. implementing an epoll-like mechanism,
         // or optimize ikcp_update when handling massive kcp connections)
-        // 得到下次刷新的时间
+        // 得到kcp下次需要刷新的时间
         public UInt32 Check(UInt32 current_)
         {
 
