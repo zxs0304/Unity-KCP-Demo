@@ -26,6 +26,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Channels;
+using Lockstep.FakeServer;
 using Lockstep.Logging;
 using Lockstep.Network;
 using Lockstep.Util;
@@ -359,14 +360,13 @@ namespace SGF.Network.KCP
         {
             if (m_SystemSocket.Available <= 0)
             {
-                //Console.WriteLine($"未收到udp包 大小{m_SystemSocket.Available}");
                 return;
             }
 
             EndPoint remotePoint = new IPEndPoint(IPAddress.Any, 0);
             int cnt = m_SystemSocket.ReceiveFrom(m_RecvBufferTemp, m_RecvBufferTemp.Length,
                 SocketFlags.None, ref remotePoint);
-            Console.WriteLine($"收到udp包 大小{cnt}");
+            //Console.WriteLine($"收到udp包 大小{cnt}");
             if (cnt > 0)
             {
                 KCPProxy proxy = GetKcp((IPEndPoint)remotePoint);
@@ -406,7 +406,7 @@ namespace SGF.Network.KCP
             m_RemotePoint = remotePoint;
 
             m_Kcp = new KCP(key, HandleKcpSend);
-            m_Kcp.NoDelay(1, 10, 2, 1);
+            m_Kcp.NoDelay(1, 1, 2, 1);
             m_Kcp.WndSize(128, 128);
 
         }
@@ -452,6 +452,7 @@ namespace SGF.Network.KCP
             return m_Kcp.Send(buff, size) >= 0;
         }
 
+        // 0号字节为flag（目前flag只有0x00这一种），1~2号字节为操作码，后续为实际的消息
         public bool DoSend(ushort opcode, byte[] buff)
         {
             int size = buff.Length;
@@ -463,15 +464,11 @@ namespace SGF.Network.KCP
             return DoSend(bytes,bytes.Length);
         }
 
-        //public bool DoSend(byte flag, ushort opcode, byte[] buff)
-        //{
-
-        //    this.byteses[0][0] = flag;
-        //    this.byteses[1] = BytesHelper.GetBytes(opcode);
-        //    this.byteses[2] = bytes;
-
-        //    channel.Send(this.byteses);
-        //}
+        public bool DoSend(IMessage message)
+        {
+            byte[] bytes = MessagePacker.Instance.SerializeToByteArray(message);
+            return DoSend(message.opcode, bytes);
+        }
 
         //---------------------------------------------
 

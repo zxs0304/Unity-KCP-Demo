@@ -4,6 +4,7 @@ using System.Net;
 using Lockstep.Logging;
 using Lockstep.Network;
 using Lockstep.Util;
+using SGF.Network.KCP;
 
 namespace Lockstep.FakeServer{
     public class Server : IMessageDispatcher {
@@ -105,7 +106,7 @@ namespace Lockstep.FakeServer{
 
                 OnGameStart(_room);
             }
-            Debug.Log("OnPlayerConnect count:" + _curCount + " " + JsonUtil.ToJson(msg));
+            Debug.Log("OnPlayerConnect count:" + _curCount + " Prot: " + session.RemoteAddress.Port + "  " + JsonUtil.ToJson(msg));
         }
 
         void OnPlayerQuit(Session session, IMessage message){

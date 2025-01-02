@@ -77,6 +77,7 @@ namespace Lockstep.FakeServer
             {
                 var kcpProxy = _kcpProxys[i];
                 kcpProxy.DoSend((ushort)EMsgType.FrameInput, bytes);
+
             }
         }
 
@@ -93,6 +94,7 @@ namespace Lockstep.FakeServer
                 frame.localPlayerId = i;
                 var bytes = frame.ToBytes();
                 kcpProxy.DoSend((ushort)EMsgType.StartGame, bytes);
+
             }
         }
 

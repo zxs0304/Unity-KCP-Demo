@@ -16,7 +16,7 @@ namespace Lockstep.FakeServer{
                 DoAwake();
                 while (true) {
                     try {
-                        Thread.Sleep(3);
+                        //Thread.Sleep(3);
                         contex.Update();
 
                         server.Update();

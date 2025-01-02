@@ -3,12 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using Lockstep.FakeServer;
+
 namespace Lockstep.Network
 {
     public class KCPNetworkProxy : NetBase
     {
-        private readonly Dictionary<long, Session> sessions = new Dictionary<long, Session>();
         public IMessagePacker MessagePacker { get; set; }
         public IKcpMessageDispatcher MessageDispatcher { get; set; }
         public KCPSocket m_Socket;
@@ -34,15 +33,14 @@ namespace Lockstep.Network
 
         private void OnReceiveAny(byte[] buffer, int size, KCPProxy proxy)
         {
-            Console.WriteLine($"Receive Any From : {(proxy.RemotePoint as IPEndPoint).Address} {(proxy.RemotePoint as IPEndPoint).Port}");
             Packet packet = new Packet(buffer);
-            (MessageDispatcher).Dispatch(proxy, packet);
+            MessageDispatcher.Dispatch(proxy, packet);
         }
+
         public void Update()
         {
             m_Socket.Update();
         }
-
 
     }
 }

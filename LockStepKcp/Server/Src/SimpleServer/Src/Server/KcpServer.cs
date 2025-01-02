@@ -51,7 +51,7 @@ namespace Lockstep.FakeServer
             //var msg = JsonUtil.ToJson(message);
             //Log.sLog("Server " + msg);
             var type = (EMsgType)opcode;
-            Console.WriteLine($"收到消息：{type.ToString()}   ,端口：{(kcpProxy.RemotePoint as IPEndPoint).Port}");
+            //Console.WriteLine($"收到消息：{type.ToString()}  , 端口：{kcpProxy.RemotePoint.Port}");
             switch (type)
             {
                 case EMsgType.JoinRoom:
@@ -122,7 +122,7 @@ namespace Lockstep.FakeServer
 
                 OnGameStart(_room);
             }
-            Debug.Log("OnPlayerConnect count:" + _curCount + " " + JsonUtil.ToJson(msg));
+            Debug.Log("OnPlayerConnect count:" + _curCount + "Prot: "+ kcpProxy.RemotePoint.Port + "  " + JsonUtil.ToJson(msg));
         }
 
         void OnPlayerQuit(KCPProxy kcpProxy, IMessage message)
