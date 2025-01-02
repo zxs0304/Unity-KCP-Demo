@@ -18,7 +18,10 @@ namespace Lockstep.Logic{
             Session = net.Create(serverIpPoint);
             Session.Start();
         }
+        public void Update()
+        {
 
+        }
 
         public void Dispatch(Session session, Packet packet){
             ushort opcode = packet.Opcode();

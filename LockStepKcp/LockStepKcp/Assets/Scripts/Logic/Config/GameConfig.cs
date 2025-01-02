@@ -13,7 +13,10 @@ namespace LockstepTutorial {
         public string prefabPath;
 
         public void CopyTo(object dst){
-            if (Entity.GetType() != dst.GetType()) {
+            if (Entity.GetType() != dst.GetType())
+            {
+                Debug.Log(Entity.GetType());
+                Debug.Log(dst.GetType());
                 return;
             }
 

@@ -11,8 +11,7 @@ namespace Lockstep.Network
         public static IPEndPoint serverIpPoint = NetworkUtil.ToIPEndPoint("127.0.0.1", 12345);
         public IMessagePacker MessagePacker { get; set; }
         public IKcpMessageDispatcher MessageDispatcher { get; set; }
-
-       public KCPSocket m_Socket;
+        public KCPSocket m_Socket;
 
         public void Awake(NetworkProtocol protocol)
         {
@@ -34,12 +33,18 @@ namespace Lockstep.Network
             }
         }
 
+        public void Send(IMessage msg)
+        {
+            m_Socket.SendTo(msg, serverIpPoint);
+        }
+
         private void OnReceiveAny(byte[] buffer, int size, KCPProxy proxy)
         {
-            Console.WriteLine($"Receive Any From : {(proxy.RemotePoint).Address} {(proxy.RemotePoint).Port}");
+            Console.WriteLine($"Receive Any From : {proxy.RemotePoint.Address} {proxy.RemotePoint.Port}");
             Packet packet = new Packet(buffer);
             MessageDispatcher.Dispatch(proxy, packet);
         }
+
         public void Update()
         {
             m_Socket.Update();

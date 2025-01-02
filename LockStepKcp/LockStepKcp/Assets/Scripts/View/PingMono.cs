@@ -19,7 +19,13 @@ namespace LockstepTutorial {
         }
 
         private void OnGUI(){
-            GUI.Label(new Rect(0, 0, 100, 100), $"!!Ping: {GameManager.PingVal}ms");
+            // 创建一个 GUIStyle 对象
+            GUIStyle labelStyle = new GUIStyle(GUI.skin.label);
+            // 设置字体大小
+            labelStyle.fontSize = 24;  // 你可以根据需要调整大小
+            // 设置字体颜色
+            labelStyle.normal.textColor = Color.red;  // 你可以选择任何颜色
+            GUI.Label(new Rect(0, 0, 100, 100), $"Ping: {GameManager.PingVal}ms",labelStyle);
         }
     }
 }

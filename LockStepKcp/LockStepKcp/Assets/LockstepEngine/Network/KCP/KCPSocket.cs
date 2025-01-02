@@ -418,7 +418,7 @@ namespace SGF.Network.KCP
             m_RemotePoint = remotePoint;
 
             m_Kcp = new KCP(key, HandleKcpSend);
-            m_Kcp.NoDelay(1, 10, 2, 1);
+            m_Kcp.NoDelay(1, 1, 2, 1);
             m_Kcp.WndSize(128, 128);
 
         }
@@ -464,6 +464,7 @@ namespace SGF.Network.KCP
             return m_Kcp.Send(buff, size) >= 0;
         }
 
+        // 0号字节为flag（目前flag只有0x00这一种），1~2号字节为操作码，后续为实际的消息
         public bool DoSend(ushort opcode, byte[] buff)
         {
             int size = buff.Length;

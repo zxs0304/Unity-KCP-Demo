@@ -1091,10 +1091,10 @@ namespace SGF.Network.KCP
                 {
                     interval_ = 5000;
                 }
-                else if (interval_ < 10)
-                {
-                    interval_ = 10;
-                }
+                //else if (interval_ < 10)
+                //{
+                //    interval_ = 10;
+                //}
                 interval = (UInt32)interval_;
             }
 

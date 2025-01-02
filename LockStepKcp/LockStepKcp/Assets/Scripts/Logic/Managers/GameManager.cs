@@ -85,7 +85,12 @@ namespace LockstepTutorial {
         }
 
         private void Update(){
-            netClient.Update();
+
+            if (!IsReplay && !IsClientMode )
+            {
+                netClient.Update();
+            }
+
             _DoUpdate();
         }
 
@@ -140,11 +145,13 @@ namespace LockstepTutorial {
         }
 
         public static void StartGame(Msg_StartGame msg){
-            UnityEngine.Debug.Log("StartGame");
+            UnityEngine.Debug.Log($"StartGame  LocalPlayerId:{msg.localPlayerId}");
             Instance.StartGame(msg.mapId, msg.playerInfos, msg.localPlayerId);
         }
 
         public void StartGame(int mapId, PlayerServerInfo[] playerInfos, int localPlayerId){
+            print("localPlayerId :" + localPlayerId);
+
             _hasStart = true;
             curMapId = mapId;
 
@@ -157,18 +164,21 @@ namespace LockstepTutorial {
                 Debug.Trace("CreatePlayer");
                 allPlayers.Add(new Player() {localId = i});
             }
-
             //create Players 
             for (int i = 0; i < playerCount; i++) {
                 var playerInfo = playerInfos[i];
+                print(allPlayers[i].localId);
                 var go = HeroManager.InstantiateEntity(allPlayers[i], playerInfo.PrefabId, playerInfo.initPos);
+                print(allPlayers[i].localId);
+                go.name = allPlayers[i].localId.ToString();
                 //init mover
                 if (allPlayers[i].localId == localPlayerId) {
                     MyPlayerTrans = go.transform;
                 }
-            }
 
+            }
             MyPlayer = allPlayers[localPlayerId];
+
         }
 
 
@@ -237,7 +247,8 @@ namespace LockstepTutorial {
 
 
         private void OnDestroy(){
-            netClient?.Send(new Msg_QuitRoom());
+            UnityEngine.Debug.Log(netClient);
+            netClient.Send(new Msg_QuitRoom());
             foreach (var mgr in _mgrs) {
                 mgr.DoDestroy();
             }

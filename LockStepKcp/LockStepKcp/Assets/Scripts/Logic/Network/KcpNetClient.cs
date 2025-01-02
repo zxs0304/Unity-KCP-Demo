@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Sockets;
 using Lockstep.Network;
 using LockstepTutorial;
 using SGF.Network.KCP;
@@ -54,7 +55,7 @@ namespace Lockstep.Logic
 
         public void Send(IMessage msg)
         {
-            kcpNetworkProxy.m_Socket.SendTo(msg, serverIpPoint);
+            kcpNetworkProxy.Send(msg);
         }
 
         public void Update()
