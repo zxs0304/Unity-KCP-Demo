@@ -396,7 +396,7 @@ namespace SGF.Network.KCP
                 seg.frg = (UInt32)(count - i - 1); // 设置片段的分段标志，指示还有多少片段未发送
                 snd_queue = append<Segment>(snd_queue, seg); 
             }
-
+            flush();
             return 0;
         }
 
@@ -703,7 +703,7 @@ namespace SGF.Network.KCP
                     }
                 }
             }
-
+            flush();
             return 0;
         }
 

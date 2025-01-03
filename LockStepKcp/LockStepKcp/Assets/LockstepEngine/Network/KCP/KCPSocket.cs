@@ -83,7 +83,7 @@ namespace SGF.Network.KCP
         private IPEndPoint m_LocalEndPoint;
         private AddressFamily m_AddrFamily;
         private Thread m_ThreadRecv;
-        private byte[] m_RecvBufferTemp = new byte[4096];
+        private byte[] m_RecvBufferTemp = new byte[8196];
 
         //KCP参数
         private List<KCPProxy> m_ListKcp; 
@@ -402,7 +402,7 @@ namespace SGF.Network.KCP
         private KCP m_Kcp;
         private bool m_NeedKcpUpdateFlag = false;
         private uint m_NextKcpUpdateTime = 0;
-        private SwitchQueue<byte[]> m_RecvQueue = new SwitchQueue<byte[]>(128);
+        private SwitchQueue<byte[]> m_RecvQueue = new SwitchQueue<byte[]>(256);
 
         private IPEndPoint m_RemotePoint;
         private Socket m_Socket;
@@ -419,7 +419,7 @@ namespace SGF.Network.KCP
 
             m_Kcp = new KCP(key, HandleKcpSend);
             m_Kcp.NoDelay(1, 1, 2, 1);
-            m_Kcp.WndSize(128, 128);
+            m_Kcp.WndSize(256, 256);
 
         }
 
