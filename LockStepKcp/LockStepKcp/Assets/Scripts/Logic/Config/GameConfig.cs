@@ -19,7 +19,6 @@ namespace LockstepTutorial {
                 Debug.Log(dst.GetType());
                 return;
             }
-
             FieldInfo[] fields = dst.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
             foreach (var field in fields) {
                 var type = field.FieldType;
@@ -29,7 +28,7 @@ namespace LockstepTutorial {
                 ) {
                     CopyTo(field.GetValue(dst), field.GetValue(Entity));
                 }
-                else {
+                else if(field.Name != "localId") {
                     field.SetValue(dst, field.GetValue(Entity));
                 }
             }

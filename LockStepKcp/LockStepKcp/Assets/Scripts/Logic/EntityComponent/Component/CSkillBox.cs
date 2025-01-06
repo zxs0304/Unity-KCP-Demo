@@ -37,11 +37,11 @@ namespace LockstepTutorial {
         }
 
         public bool Fire(int idx){
-            if (idx < 0 || idx > skills.Count) {
+            if (idx < 0 || idx >= skills.Count) {
                 return false;
             }
 
-            //Debug.Log("TryFire " + idx);
+            Debug.Log("TryFire " + idx);
 
             if (isFiring) return false; //
             var skill = skills[idx];
