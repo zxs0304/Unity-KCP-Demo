@@ -158,11 +158,21 @@ namespace LockstepTutorial {
             return ret;
         }
 
-
+        /// <summary>
+        /// 注册每个prefab对应的层级
+        /// </summary>
+        /// <param name="go"></param>
+        /// <param name="val"></param>
         public void RigisterPrefab(GameObject go, int val){
             _go2Layer[go] = val;
         }
 
+        /// <summary>
+        /// 为每个不同的prefab创建一个ColliderPrefab
+        /// </summary>
+        /// <param name="fab"></param>
+        /// <param name="obj"></param>
+        /// <param name="entity"></param>
         public void RegisterEntity(GameObject fab, GameObject obj, BaseEntity entity){
             ColliderPrefab prefab = null;
             if (!_go2ColPrefab.TryGetValue(fab, out prefab)) {
@@ -171,6 +181,7 @@ namespace LockstepTutorial {
 
             AttachToColSystem(_go2Layer[fab], prefab, obj, entity);
         }
+
 
         public void AttachToColSystem(int layer, ColliderPrefab prefab, GameObject obj, BaseEntity entity){
             var proxy = new ColliderProxy();

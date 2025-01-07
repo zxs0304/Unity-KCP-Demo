@@ -127,21 +127,28 @@ namespace LockstepTutorial {
 
         private void _DoUpdate(){
             if (!_hasStart) return;
-            remainTime += Time.deltaTime;
-            while (remainTime >= 0.03f) {
-                remainTime -= 0.03f;
-                //send input
-                if (!IsReplay) {
-                    SendInput();
-                }
 
+            //如果用 reaminTime来限制发送速率的话，会导致数据没有及时发送而被覆盖，因为unity的update频率是很快的，帧率高的时候，不到0.01秒就会update一次
+            //比如我这一帧update中按下了空格,并且赋值给CurGameInput，但是此帧没有发送
+            //然后后续下一帧没按空格的数据覆盖了CurGameInput，然后发送了数据。
+            //remainTime += Time.deltaTime;
+            //while (remainTime >= 0.03f)
+            //{
+            //    remainTime -= 0.03f;
 
-                if (GetFrame(curFrameIdx) == null) {
-                    return;
-                }
-
-                Step();
+            //send input
+            if (!IsReplay)
+            {
+                SendInput();
             }
+
+            if (GetFrame(curFrameIdx) == null)
+            {
+                return;
+            }
+
+            Step();
+            //}
         }
 
         public static void StartGame(Msg_StartGame msg){
@@ -238,7 +245,8 @@ namespace LockstepTutorial {
         }
 
         private void _Update(){
-            var deltaTime = new LFloat(true, 30);
+            //var deltaTime = new LFloat(true, 30);
+            var deltaTime = Time.deltaTime.ToLFloat();
             DoUpdate(deltaTime);
             foreach (var mgr in _mgrs) {
                 mgr.DoUpdate(deltaTime);
@@ -292,7 +300,7 @@ namespace LockstepTutorial {
             //DumpPathFindReqs();
         }
 
-
+        //将收到服务器的帧数据push到 帧列表中
         public static void PushFrameInput(FrameInput input){
             var frames = Instance.frames;
             for (int i = frames.Count; i <= input.tick; i++) {

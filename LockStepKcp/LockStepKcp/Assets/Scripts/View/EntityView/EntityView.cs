@@ -3,6 +3,7 @@ using Lockstep.Math;
 using UnityEngine;
 
 namespace LockstepTutorial {
+    //Entity里面只有数据，EntityView 就是把Entity的数据给呈现出来
     public abstract class EntityView : MonoBehaviour, IEntityView {
         public UIFloatBar uiFloatBar;
         public Entity entity;

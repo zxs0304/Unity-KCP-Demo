@@ -67,7 +67,8 @@ namespace Lockstep.Logic {
                     Speed.x = LFloat.zero;
                     Speed.z = LFloat.zero;
                 }
-                if (isOnFloor) {
+                if (isOnFloor)
+                {
                     var speedVal = Speed.magnitude - FloorFriction * deltaTime;
                     speedVal = LMath.Max(speedVal, LFloat.zero);
                     Speed = Speed.normalized * speedVal;

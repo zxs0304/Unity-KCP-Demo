@@ -15,6 +15,7 @@ namespace Lockstep.Logic {
         public int PrefabId;
         public object engineTransform;
         public CTransform2D transform { get; } = new CTransform2D();
+        public LVector3 curSpeed;
         public CRigidbody rigidbody = new CRigidbody();
         public ColliderData colliderData = new ColliderData();
         protected List<BaseComponent> allComponents = new List<BaseComponent>();
@@ -48,6 +49,7 @@ namespace Lockstep.Logic {
             foreach (var comp in allComponents) {
                 comp.DoUpdate(deltaTime);
             }
+            curSpeed = rigidbody.Speed;
         }
 
         public override void DoDestroy(){

@@ -22,9 +22,10 @@ namespace LockstepTutorial {
         }
         
         public override void DoUpdate(LFloat deltaTime){
-            if (!entity.rigidbody.isOnFloor) {
-                return;
-            }
+            //if (!entity.rigidbody.isOnFloor)
+            //{
+            //    return;
+            //}
 
             var needChase = input.inputUV.sqrMagnitude > new LFloat(true, 10);
             if (needChase) {
@@ -33,7 +34,10 @@ namespace LockstepTutorial {
                 var targetDeg = dir.ToDeg();
                 transform.deg = CTransform2D.TurnToward(targetDeg, transform.deg, player.turnSpd * deltaTime, out var hasReachDeg);
             }
-
+            if (input.isSpeedUp && player.rigidbody.isOnFloor)
+            {
+                player.rigidbody.AddImpulse(new LVector3(true,0,8500,0)) ;
+            }
             hasReachTarget = !needChase;
         }
     }
