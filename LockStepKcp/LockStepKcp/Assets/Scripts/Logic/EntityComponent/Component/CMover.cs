@@ -31,7 +31,9 @@ namespace LockstepTutorial {
             if (needChase) {
                 var dir = input.inputUV.normalized;
                 transform.pos = transform.pos + dir * speed * deltaTime;
+                //UnityEngine.Debug.Log($"player角度 {transform.deg}");
                 var targetDeg = dir.ToDeg();
+                //UnityEngine.Debug.Log($"target角度 {targetDeg}");
                 transform.deg = CTransform2D.TurnToward(targetDeg, transform.deg, player.turnSpd * deltaTime, out var hasReachDeg);
             }
             if (input.isSpeedUp && player.rigidbody.isOnFloor)

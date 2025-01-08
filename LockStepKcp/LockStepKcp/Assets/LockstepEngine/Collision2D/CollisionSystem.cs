@@ -79,12 +79,14 @@ namespace Lockstep.Collision2D {
 
         public void QueryRegion(int layerType, LVector2 pos, LVector2 size, LVector2 forward, FuncCollision callback){
             Debug.Trace($"QueryRegion layerType:{layerType} pos:{pos} size:{size}  forward:{forward} ");
+            UnityEngine.Debug.Log($"QueryRegion layerType:{layerType} pos:{pos} size:{size}  forward:{forward} ");
             tempCallback = callback;
             _tempSize = size;
             _tempForward = forward;
             _tempPos = pos;
             var radius = size.magnitude;
             var checkBounds = LRect.CreateRect(pos, new LVector2(radius, radius));
+            UnityEngine.Debug.Log($"checkBounds:{checkBounds} ");
             GetBoundTree(layerType).CheckCollision(ref checkBounds, _CheckRegionOBB);
         }
 

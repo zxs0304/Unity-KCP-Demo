@@ -32,7 +32,13 @@ namespace Lockstep.Collision2D {
         public static LFloat ToDeg(LVector2 value){
             var ccwDeg = LMath.Atan2(value.y, value.x) * LMath.Rad2Deg;
             var deg = 90 - ccwDeg;
+
             return AbsDeg(deg);
+        }
+        public static LFloat ToDeg_2(LVector2 value)
+        {
+            var ccwDeg = LMath.Atan2(value.y, value.x) * LMath.Rad2Deg;
+            return ccwDeg;
         }
         public static LFloat TurnToward(LVector2 targetPos, LVector2 currentPos, LFloat cursDeg, LFloat turnVal,
             out bool isLessDeg){
@@ -42,6 +48,8 @@ namespace Lockstep.Collision2D {
         }
         public static LFloat TurnToward(LFloat toDeg, LFloat cursDeg, LFloat turnVal,
             out bool isLessDeg){
+            //TEST
+            //var curDeg = cursDeg;
             var curDeg = CTransform2D.AbsDeg(cursDeg);
             var diff = toDeg - curDeg;
             var absDiff = LMath.Abs(diff);

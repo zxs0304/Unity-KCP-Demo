@@ -90,9 +90,11 @@ namespace Lockstep.Collision2D {
             }
             return false;
         }
+        // OBB型技能 碰撞检测
         public static bool CheckCollision(ColliderPrefab col1, CTransform2D trans1,LVector2 pos,LVector2 size,LVector2 up ){
             tempOBB.size = size;
             tempOBB.up = up;
+            tempOBB.radius = size.magnitude;
             tempTrans.pos = pos;
             foreach (var part1 in col1.parts) {
                 if (CheckCollision(part1.collider, trans1 + part1.transform, tempOBB, tempTrans)) {
@@ -101,6 +103,7 @@ namespace Lockstep.Collision2D {
             }
             return false;
         }
+        // 圆形技能 碰撞检测
         public static bool CheckCollision(ColliderPrefab col1, CTransform2D trans1,LVector2 pos,LFloat radius){
             tempCircle.radius = radius;
             tempTrans.pos = pos;

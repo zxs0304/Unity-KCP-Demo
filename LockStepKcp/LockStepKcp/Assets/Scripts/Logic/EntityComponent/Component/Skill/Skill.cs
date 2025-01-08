@@ -131,6 +131,9 @@ namespace LockstepTutorial {
             }
             else {
                 //aabb
+
+                UnityEngine.Debug.Log($"pos: {entity.transform.TransformPoint(col.pos)}   size:{col.size}");
+
                 CollisionManager.QueryRegion(TargetLayer, entity.transform.TransformPoint(col.pos), col.size,
                     entity.transform.forward,
                     _OnTriggerEnter);
@@ -164,9 +167,43 @@ namespace LockstepTutorial {
 
 
         private void _OnTriggerEnter(ColliderProxy other){
+            UnityEngine.Debug.Log($"发生碰撞: {other.Entity}");
             if (_curPart.collider.IsCircle && _curPart.collider.deg > 0) {
                 var deg = (other.Transform2D.pos - entity.transform.pos).ToDeg();
-                var degDiff = entity.transform.deg.Abs() - deg;
+                UnityEngine.Debug.Log($"原角度转化前: {deg}");
+                //if (deg > 180)
+                //{
+                //    deg -= 360;
+                //}
+                //else if (deg < -180)
+                //{
+                //    deg += 360;
+                //}
+                //UnityEngine.Debug.Log($"原角度后: {deg}");
+
+                var playerDeg = entity.transform.deg;
+                UnityEngine.Debug.Log($"player转化前: {playerDeg}");
+                //if (playerDeg > 180)
+                //{
+                //    playerDeg -= 360;
+                //}
+                //else if (playerDeg < -180)
+                //{
+                //    playerDeg += 360;
+                //}
+                //UnityEngine.Debug.Log($"player后: {playerDeg}");
+                //var degDiff = entity.transform.deg - deg;
+                var degDiff = playerDeg - deg;
+                UnityEngine.Debug.Log($"diff转化前: {degDiff}");
+                if (degDiff > 180)
+                {
+                    degDiff -= 360;
+                }
+                else if (degDiff < -180)
+                {
+                    degDiff += 360;
+                }
+                UnityEngine.Debug.Log($"diff后: {degDiff}");
                 if (LMath.Abs(degDiff) <= _curPart.collider.deg) {
                     _tempTargets.Add(other);
                 }
@@ -179,45 +216,53 @@ namespace LockstepTutorial {
         public void OnDrawGizmos(){
 #if UNITY_EDITOR && DEBUG_SKILL
             float tintVal = 0.3f;
-            Gizmos.color = new Color(0, 1.0f - tintVal, tintVal, 0.25f);
-            if (Application.isPlaying) {
+            Gizmos.color = new Color(0, 1.0f - tintVal, tintVal, 0.5f);
+            if (Application.isPlaying)
+            {
                 if (entity == null) return;
                 if (_curPart == null) return;
-                if (_showTimer < Time.realtimeSinceStartup) {
+                if (_showTimer < Time.realtimeSinceStartup)
+                {
                     return;
                 }
 
                 ShowPartGizmons(_curPart);
             }
-            else {
-                foreach (var part in Parts) {
-                    if (part._DebugShow) {
+            else
+            {
+                foreach (var part in Parts)
+                {
+                    if (part._DebugShow)
+                    {
                         ShowPartGizmons(part);
                     }
                 }
             }
 
-            Gizmos.color = Color.white;
+            Gizmos.color = Color.red;
 #endif
         }
 
         private void ShowPartGizmons(SkillPart part){
 #if UNITY_EDITOR
             var col = part.collider;
-            if (col.radius > 0) {
+            if (col.radius > 0)
+            {
                 //circle
                 var pos = entity?.transform.TransformPoint(col.pos) ?? col.pos;
                 Gizmos.DrawSphere(pos.ToVector3XZ(LFloat.one), col.radius.ToFloat());
             }
-            else {
+            else
+            {
                 //aabb
+                Gizmos.color = Color.red;
                 var pos = entity?.transform.TransformPoint(col.pos) ?? col.pos;
-                Gizmos.DrawCube(pos.ToVector3XZ(LFloat.one), col.size.ToVector3XZ(LFloat.one));
+                //Gizmos.DrawCube(pos.ToVector3XZ(LFloat.one), col.size.ToVector3XZ(LFloat.one) * 2);
                 DebugExtension.DebugLocalCube(Matrix4x4.TRS(
                         pos.ToVector3XZ(LFloat.one),
                         Quaternion.Euler(0, entity.transform.deg.ToFloat(), 0),
                         Vector3.one),
-                    col.size.ToVector3XZ(LFloat.one), Gizmos.color);
+                    col.size.ToVector3XZ(LFloat.one) * 2, Gizmos.color);
             }
 #endif
         }

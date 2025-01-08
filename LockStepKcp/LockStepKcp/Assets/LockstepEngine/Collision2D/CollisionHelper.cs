@@ -10,8 +10,13 @@ namespace Lockstep.Collision2D {
         private static bool CheckSeg_Polygon    (CSegment col1,    CPolygon  col2,Transform2D trans1,Transform2D trans2){return false;}   
         private static bool CheckRay_Ray        (CRay     col1,    CRay      col2,Transform2D trans1,Transform2D trans2){return false;}   
         private static bool CheckRay_Circle     (CRay     col1,    CCircle   col2,Transform2D trans1,Transform2D trans2){return false;}   
-        private static bool CheckRay_AABB       (CRay     col1,    CAABB     col2,Transform2D trans1,Transform2D trans2){return false;}   
-        private static bool CheckRay_OBB        (CRay     col1,    COBB      col2,Transform2D trans1,Transform2D trans2){return false;}   
+        private static bool CheckRay_AABB       (CRay     col1,    CAABB     col2,Transform2D trans1,Transform2D trans2){return false;}
+
+        private static bool CheckRay_OBB        (CRay     col1,    COBB      col2,Transform2D trans1,Transform2D trans2)
+        {
+            return false;
+        }
+
         private static bool CheckRay_Polygon    (CRay     col1,    CPolygon  col2,Transform2D trans1,Transform2D trans2){return false;}
 
         private static bool CheckCircle_Circle(CCircle col1, CCircle col2, Transform2D trans1, Transform2D trans2){

@@ -119,6 +119,7 @@ namespace Lockstep.Math {
             this._y = (int) (num2 * 1000L / b);
         }
 
+        // 向量长度的平方
         public LFloat sqrMagnitude {
             get {
                 long num = (long) this._x;
@@ -135,6 +136,7 @@ namespace Lockstep.Math {
             }
         }
 
+        // 向量的长度
         public LFloat magnitude {
             get {
                 long num = (long) this._x;
