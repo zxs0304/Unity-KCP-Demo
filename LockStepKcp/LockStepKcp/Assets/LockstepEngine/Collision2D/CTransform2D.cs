@@ -19,7 +19,9 @@ namespace Lockstep.Collision2D {
         public LFloat y;
         public LFloat deg; //same as Unity CW deg(up) =0
 
-        public LVector2 forward {//等同于2D  up
+        public LVector2 forward {
+            // 对于3D下，forward (1,1)对应于世界的x轴和z轴，另外矩形碰撞体在XOZ平面上，所以forward也即是矩形碰撞体的 上 向量
+            // 而对于2D下，forward只可能是(-1,0)和(1,0),对应于世界的x轴和y轴，此时forward不再是矩形碰撞体的上向量，而是矩形碰撞体的左向量或者右向量，(0,1)才是上向量
             get {
                 LFloat s, c;
                 var ccwDeg = (-deg + 90);
@@ -29,17 +31,23 @@ namespace Lockstep.Collision2D {
             set => deg = ToDeg(value);
         }
 
-        public static LFloat ToDeg(LVector2 value){
-            var ccwDeg = LMath.Atan2(value.y, value.x) * LMath.Rad2Deg;
-            var deg = 90 - ccwDeg;
-
-            return AbsDeg(deg);
-        }
-        public static LFloat ToDeg_2(LVector2 value)
+        public static LFloat ToDeg(LVector2 value)
         {
             var ccwDeg = LMath.Atan2(value.y, value.x) * LMath.Rad2Deg;
-            return ccwDeg;
+            var deg = 90 - ccwDeg;
+            return AbsDeg(deg);
         }
+        public static void ToDeg_2D(LVector2 value,ref LFloat targetDegree)
+        {
+            if (value == LVector2.zero)
+            {
+                return;
+            }
+            var ccwDeg = LMath.Atan2(value.y, value.x) * LMath.Rad2Deg;
+            var deg = 90 - ccwDeg;
+            targetDegree = AbsDeg(deg);
+        }
+
         public static LFloat TurnToward(LVector2 targetPos, LVector2 currentPos, LFloat cursDeg, LFloat turnVal,
             out bool isLessDeg){
             var toTarget = (targetPos - currentPos).normalized;
@@ -48,8 +56,6 @@ namespace Lockstep.Collision2D {
         }
         public static LFloat TurnToward(LFloat toDeg, LFloat cursDeg, LFloat turnVal,
             out bool isLessDeg){
-            //TEST
-            //var curDeg = cursDeg;
             var curDeg = CTransform2D.AbsDeg(cursDeg);
             var diff = toDeg - curDeg;
             var absDiff = LMath.Abs(diff);
@@ -101,8 +107,8 @@ namespace Lockstep.Collision2D {
         }
 
         public LVector2 TransformDirection(LVector2 dir){
-            var y = forward;
-            var x = forward.RightVec();
+            var x = forward;
+            var y = new LVector2(0,1);
             return dir.x * x + dir.y * y;
         }
 
@@ -111,9 +117,15 @@ namespace Lockstep.Collision2D {
         }
 
         public LVector3 Pos3 {
-            get => new LVector3(pos.x, y, pos.y);
-            set {
-                pos = new LVector2(value.x, value.z);
+            // Test2D
+            //get => new LVector3(pos.x, y, pos.y);
+            get => new LVector3(pos.x, y, LFloat.zero);
+
+            set
+            {
+                //pos = new LVector2(value.x, value.z);
+                //y = value.y;
+                pos = new LVector2(value.x, value.y);
                 y = value.y;
             }
         }

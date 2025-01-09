@@ -63,12 +63,10 @@ namespace Lockstep.Math {
         public static LFloat ToDeg(this LVector2 vec){
             return CTransform2D.ToDeg(vec);
         }
-        //TEST
-        public static LFloat ToDeg_2(this LVector2 vec)
+        public static void ToDeg_2D(this LVector2 vec, ref LFloat targetDegree)
         {
-            return CTransform2D.ToDeg_2(vec);
+            CTransform2D.ToDeg_2D(vec, ref targetDegree);
         }
-
         public static LFloat Abs(this LFloat val){
             return LMath.Abs(val);
         }

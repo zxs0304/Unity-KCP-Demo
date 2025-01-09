@@ -131,9 +131,6 @@ namespace LockstepTutorial {
             }
             else {
                 //aabb
-
-                UnityEngine.Debug.Log($"pos: {entity.transform.TransformPoint(col.pos)}   size:{col.size}");
-
                 CollisionManager.QueryRegion(TargetLayer, entity.transform.TransformPoint(col.pos), col.size,
                     entity.transform.forward,
                     _OnTriggerEnter);
@@ -152,12 +149,14 @@ namespace LockstepTutorial {
                 force.x = z.x;
                 force.z = z.y;
                 foreach (var other in _tempTargets) {
+                    //TestRigidBody
                     other.Entity.rigidbody.AddImpulse(force);
                 }
             }
 
             if (part.isResetForce) {
                 foreach (var other in _tempTargets) {
+                    //TestRigidBody
                     other.Entity.rigidbody.ResetSpeed(new LFloat(3));
                 }
             }
@@ -170,29 +169,7 @@ namespace LockstepTutorial {
             UnityEngine.Debug.Log($"发生碰撞: {other.Entity}");
             if (_curPart.collider.IsCircle && _curPart.collider.deg > 0) {
                 var deg = (other.Transform2D.pos - entity.transform.pos).ToDeg();
-                UnityEngine.Debug.Log($"原角度转化前: {deg}");
-                //if (deg > 180)
-                //{
-                //    deg -= 360;
-                //}
-                //else if (deg < -180)
-                //{
-                //    deg += 360;
-                //}
-                //UnityEngine.Debug.Log($"原角度后: {deg}");
-
                 var playerDeg = entity.transform.deg;
-                UnityEngine.Debug.Log($"player转化前: {playerDeg}");
-                //if (playerDeg > 180)
-                //{
-                //    playerDeg -= 360;
-                //}
-                //else if (playerDeg < -180)
-                //{
-                //    playerDeg += 360;
-                //}
-                //UnityEngine.Debug.Log($"player后: {playerDeg}");
-                //var degDiff = entity.transform.deg - deg;
                 var degDiff = playerDeg - deg;
                 UnityEngine.Debug.Log($"diff转化前: {degDiff}");
                 if (degDiff > 180)
@@ -250,19 +227,32 @@ namespace LockstepTutorial {
             {
                 //circle
                 var pos = entity?.transform.TransformPoint(col.pos) ?? col.pos;
-                Gizmos.DrawSphere(pos.ToVector3XZ(LFloat.one), col.radius.ToFloat());
+                Gizmos.DrawSphere(pos.ToVector3_2D(), col.radius.ToFloat());
             }
             else
             {
                 //aabb
                 Gizmos.color = Color.red;
                 var pos = entity?.transform.TransformPoint(col.pos) ?? col.pos;
-                //Gizmos.DrawCube(pos.ToVector3XZ(LFloat.one), col.size.ToVector3XZ(LFloat.one) * 2);
+
+                //绘制技能范围，根据当前角色的方向
                 DebugExtension.DebugLocalCube(Matrix4x4.TRS(
-                        pos.ToVector3XZ(LFloat.one),
-                        Quaternion.Euler(0, entity.transform.deg.ToFloat(), 0),
+                        pos.ToVector3_2D(),
+                        Quaternion.Euler(0,0, 0),
                         Vector3.one),
-                    col.size.ToVector3XZ(LFloat.one) * 2, Gizmos.color);
+                    col.size.ToVector3_2D() * 2, Color.green);
+                //Gizmos.DrawCube(pos.ToVector3_2D(), new Vector3(col.size.x, col.size.y, 1) * 2);
+
+
+                //TEST2D
+                //绘制技能范围，但不根据当前角色的方向
+                //Gizmos.DrawCube(pos.ToVector3XZ(LFloat.one), col.size.ToVector3XZ(LFloat.one) * 2);
+                //绘制技能范围，但根据当前角色的方向
+                //DebugExtension.DebugLocalCube(Matrix4x4.TRS(
+                //        pos.ToVector3XZ(LFloat.one),
+                //        Quaternion.Euler(0, entity.transform.deg.ToFloat(), 0),
+                //        Vector3.one),
+                //    col.size.ToVector3XZ(LFloat.one) * 2, Color.green);
             }
 #endif
         }

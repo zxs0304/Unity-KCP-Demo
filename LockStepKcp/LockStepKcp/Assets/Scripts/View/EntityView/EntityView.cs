@@ -13,7 +13,9 @@ namespace LockstepTutorial {
             this.entity = entity as Entity;
             this.entity.EntityView = this;
             uiFloatBar = FloatBarManager.CreateFloatBar(transform, this.entity.curHealth, this.entity.maxHealth);
-            transform.position = this.entity.transform.Pos3.ToVector3();
+            //TestRigidBody
+            //transform.position = this.entity.transform.Pos3.ToVector3();
+            transform.position = this.entity.transform.Pos3.ToVector3_2D();
         }
 
         public virtual void OnTakeDamage(int amount, LVector3 hitPoint){
@@ -27,13 +29,16 @@ namespace LockstepTutorial {
         }
 
         private void Update(){
-            var pos = entity.transform.Pos3.ToVector3();
+            //TestRigidBody
+            //var pos = entity.transform.Pos3.ToVector3();
+            var pos = entity.transform.Pos3.ToVector3_2D();
+
             transform.position = Vector3.Lerp(transform.position, pos, 0.3f);
             var deg = entity.transform.deg.ToFloat();
-            //deg = Mathf.Lerp(transform.rotation.eulerAngles.y, deg, 0.3f);
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, deg, 0), 0.3f);
-        }    
-        
+            //TEST2d
+            //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, deg, 0), 0.3f);
+        }
+
         private void OnDrawGizmos(){
             if (entity.skillBox.isFiring) {
                 var skill = entity.skillBox.curSkill;

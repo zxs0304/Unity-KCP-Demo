@@ -62,6 +62,20 @@ namespace Lockstep.Math {
         public static Vector3 ToVector3(this LVector3 vec){
             return new Vector3(vec.x.ToFloat(), vec.y.ToFloat(), vec.z.ToFloat());
         }
+
+        //TestRigidBody
+        //TestRigidBody
+        //忽略掉z轴的值，只要x和y
+        public static Vector3 ToVector3_2D(this LVector2 vec)
+        {
+            return new Vector3(vec.x.ToFloat(), vec.y.ToFloat(), 0);
+        }
+        //忽略掉z轴的值，只要x和y
+        public static Vector3 ToVector3_2D(this LVector3 vec)
+        {
+            return new Vector3(vec.x.ToFloat(), vec.y.ToFloat(), 0);
+        }
+
         public static Rect ToRect(this LRect vec){
             return new Rect(vec.position.ToVector2(),vec.size.ToVector2());
         }

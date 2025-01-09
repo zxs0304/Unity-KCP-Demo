@@ -82,7 +82,9 @@ namespace Lockstep.Collision2D {
             UnityEngine.Debug.Log($"QueryRegion layerType:{layerType} pos:{pos} size:{size}  forward:{forward} ");
             tempCallback = callback;
             _tempSize = size;
-            _tempForward = forward;
+
+            // XOY平面下 的up 是 (0,1)
+            _tempForward = new LVector2(0,1);
             _tempPos = pos;
             var radius = size.magnitude;
             var checkBounds = LRect.CreateRect(pos, new LVector2(radius, radius));

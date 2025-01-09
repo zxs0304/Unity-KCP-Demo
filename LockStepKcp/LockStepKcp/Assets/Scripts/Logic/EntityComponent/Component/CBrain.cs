@@ -11,8 +11,9 @@ namespace LockstepTutorial {
         public LFloat atkInterval = 1;
         private LFloat atkTimer;
 
-        public override void DoUpdate(LFloat deltaTime){     
-            if (!entity.rigidbody.isOnFloor) {
+        public override void DoUpdate(LFloat deltaTime){
+            if (!entity.rigidbody.isOnFloor)
+            {
                 return;
             }
             //find target
