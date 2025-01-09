@@ -28,7 +28,7 @@ namespace Lockstep.Collision2D {
             Debug.Trace($"{fab.name} !!!CreateCollider  deg: {data.deg} up:{data.size} radius:{data.radius}");
             var colFab = new ColliderPrefab();
             colFab.parts.Add(new ColliderPart() {
-                transform = new CTransform2D(LVector2.zero),
+                transform = new CTransform2D(data.pos),
                 collider = collider
             });
             return colFab;

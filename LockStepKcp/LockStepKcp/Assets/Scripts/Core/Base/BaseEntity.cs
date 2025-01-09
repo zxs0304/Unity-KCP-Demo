@@ -49,7 +49,7 @@ namespace Lockstep.Logic {
             foreach (var comp in allComponents) {
                 comp.DoUpdate(deltaTime);
             }
-            curSpeed = rigidbody.Speed;
+
         }
 
         public override void DoDestroy(){
