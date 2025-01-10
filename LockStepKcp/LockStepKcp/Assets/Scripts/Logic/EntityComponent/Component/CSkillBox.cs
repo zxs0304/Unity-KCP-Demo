@@ -34,6 +34,7 @@ namespace LockstepTutorial {
             foreach (var skill in skills) {
                 skill.DoUpdate(deltaTime);
             }
+
         }
 
         public bool Fire(int idx){

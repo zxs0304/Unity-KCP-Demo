@@ -214,9 +214,10 @@ namespace Lockstep.Collision2D {
 
         public void NotifyCollisionEvent(ColliderProxy a, ColliderProxy b, ECollisionEvent type){
             funcGlobalOnTriggerEvent?.Invoke(a, b, type);
-
+            //UnityEngine.Debug.Log($"{a}和{b}发送碰撞:{type} ");
             if (!a.IsStatic) {
                 a.OnTriggerEvent?.Invoke(b, type);
+
                 //TriggerEvent(a, b, type);
             }
 

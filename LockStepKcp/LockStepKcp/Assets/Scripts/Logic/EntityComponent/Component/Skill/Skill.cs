@@ -144,19 +144,14 @@ namespace LockstepTutorial {
             if (part.needForce) {
                 var force = part.impulseForce;
                 var forward = entity.transform.forward;
-                var right = forward.RightVec();
-                var z = forward * force.z + right * force.x;
-                force.x = z.x;
-                force.z = z.y;
+                force.x = forward.x * force.x;
                 foreach (var other in _tempTargets) {
-                    //TestRigidBody
                     other.Entity.rigidbody.AddImpulse(force);
                 }
             }
 
             if (part.isResetForce) {
                 foreach (var other in _tempTargets) {
-                    //TestRigidBody
                     other.Entity.rigidbody.ResetSpeed(new LFloat(3));
                 }
             }

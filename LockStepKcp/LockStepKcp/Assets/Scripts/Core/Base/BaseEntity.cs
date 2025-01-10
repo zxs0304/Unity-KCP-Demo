@@ -19,6 +19,7 @@ namespace Lockstep.Logic {
         public CRigidbody rigidbody = new CRigidbody();
         public ColliderData colliderData = new ColliderData();
         protected List<BaseComponent> allComponents = new List<BaseComponent>();
+        public FuncOnTriggerEvent OnTriggerEvent;
 
         public BaseEntity(){
             Debug.Trace("BaseEntity  " + IdCounter.ToString(), true);

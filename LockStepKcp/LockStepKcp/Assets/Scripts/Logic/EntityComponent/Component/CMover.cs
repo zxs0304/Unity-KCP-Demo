@@ -44,8 +44,8 @@ namespace LockstepTutorial {
                 //transform.deg = CTransform2D.TurnToward(targetDeg, transform.deg, player.turnSpd * deltaTime, out var hasReachDeg);
                 //2D情况下直接转向
                 transform.deg = targetDeg;
-                UnityEngine.Debug.Log($"player角度 {transform.deg}");
-                UnityEngine.Debug.Log($" Transform.Pos3 : {transform.Pos3}");
+                //UnityEngine.Debug.Log($"player角度 {transform.deg}");
+                //UnityEngine.Debug.Log($" Transform.Pos3 : {transform.Pos3}");
             }
 
             //TestRigidBody Jump
