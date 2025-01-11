@@ -185,7 +185,7 @@ namespace LockstepTutorial {
 
         public void AttachToColSystem(int layer, ColliderPrefab prefab, GameObject obj, BaseEntity entity){
             var proxy = new ColliderProxy();
-            proxy.OnTriggerEvent += entity.OnTriggerEvent;
+            proxy.OnTriggerEvent = entity.OnTriggerEvent;
             proxy.EntityObject = entity;
             proxy.Init(prefab, entity.transform);
 #if UNITY_EDITOR

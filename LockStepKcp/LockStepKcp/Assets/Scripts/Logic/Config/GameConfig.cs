@@ -22,13 +22,26 @@ namespace LockstepTutorial {
             FieldInfo[] fields = dst.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
             foreach (var field in fields) {
                 var type = field.FieldType;
+
+                //如果字段是localId,则应该保持实际对象的localId，不应该拷贝config对象的
+                if (field.Name == "localId") 
+                {
+                    continue;
+                }
+                //如果字段是一个委托类型,则应该保持实际对象的委托，不应该拷贝config对象的委托,否则实际执行的时候，执行的是config对象的函数
+                if (type.IsSubclassOf(typeof(MulticastDelegate)))
+                {
+                    continue;
+                }
+
                 if (typeof(BaseComponent).IsAssignableFrom(type)
                     || typeof(CRigidbody).IsAssignableFrom(type)
                     || typeof(Transform).IsAssignableFrom(type)
                 ) {
                     CopyTo(field.GetValue(dst), field.GetValue(Entity));
                 }
-                else if(field.Name != "localId") {
+                else 
+                {
                     field.SetValue(dst, field.GetValue(Entity));
                 }
             }

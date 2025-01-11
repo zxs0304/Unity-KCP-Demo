@@ -79,7 +79,7 @@ namespace Lockstep.Collision2D {
 
         public void QueryRegion(int layerType, LVector2 pos, LVector2 size, LVector2 forward, FuncCollision callback){
             Debug.Trace($"QueryRegion layerType:{layerType} pos:{pos} size:{size}  forward:{forward} ");
-            UnityEngine.Debug.Log($"QueryRegion layerType:{layerType} pos:{pos} size:{size}  forward:{forward} ");
+            //UnityEngine.Debug.Log($"QueryRegion layerType:{layerType} pos:{pos} size:{size}  forward:{forward} ");
             tempCallback = callback;
             _tempSize = size;
 
@@ -214,10 +214,11 @@ namespace Lockstep.Collision2D {
 
         public void NotifyCollisionEvent(ColliderProxy a, ColliderProxy b, ECollisionEvent type){
             funcGlobalOnTriggerEvent?.Invoke(a, b, type);
-            //UnityEngine.Debug.Log($"{a}和{b}发送碰撞:{type} ");
+            //UnityEngine.Debug.Log($"发生碰撞时a：entity {a.Entity.GetHashCode()}  entityId:{a.Entity.EntityId} entityTrans:{a.Entity.transform.Pos3} isstatic:{a.IsStatic} ontriggerEvent:{a.OnTriggerEvent}");
+            //UnityEngine.Debug.Log($"发生碰撞时b：entity {b.Entity.GetHashCode()}  entityId:{b.Entity.EntityId} entityTrans:{b.Entity.transform.Pos3} isstatic:{b.IsStatic} ontriggerEvent:{b.OnTriggerEvent}");
             if (!a.IsStatic) {
                 a.OnTriggerEvent?.Invoke(b, type);
-
+                
                 //TriggerEvent(a, b, type);
             }
 

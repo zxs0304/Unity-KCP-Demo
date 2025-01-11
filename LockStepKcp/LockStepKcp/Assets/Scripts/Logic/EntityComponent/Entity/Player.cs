@@ -24,28 +24,30 @@ namespace LockstepTutorial {
             if (input.skillId != -1) {
                 Fire(input.skillId);
             }
-            UnityEngine.Debug.Log($"{skillBox.isFiring}  { skillBox.GetHashCode()}");
         }
 
         public void OnCollision(ColliderProxy other, ECollisionEvent type)
         {
+          
             if (type == ECollisionEvent.Enter && other.LayerType == (int) EColliderLayer.Enemy)
             {
-                Debug.Log($"碰撞进入 ,isFireing:{skillBox.isFiring}  {skillBox.GetHashCode()}");
-
+                Debug.Log($"碰撞enter ,skillBox.curskill:{skillBox.curSkill}");
                 if (skillBox.curSkill?.AnimName == "sprint" && skillBox.isFiring)
                 {
-                    other.Entity.rigidbody.AddImpulse(new LVector3(true,transform.forward.x * 4000,6000,0));
+                    other.Entity.rigidbody.AddImpulse(new LVector3(true,0,4000,0));
                 }
             }
             if (type == ECollisionEvent.Stay && other.LayerType == (int)EColliderLayer.Enemy)
             {
-                Debug.Log($"碰撞stay ,isFireing:{skillBox.isFiring}");
-
+                Debug.Log($"碰撞stay ,skillBox.curskill:{skillBox.curSkill}");
                 //if (skillBox.curSkill?.AnimName == "sprint" && skillBox.isFiring)
                 //{
                 //    other.Entity.rigidbody.AddImpulse(new LVector3(true, transform.forward.x * 4000, 6000, 0));
                 //}
+            }
+            if (type == ECollisionEvent.Exit && other.LayerType == (int)EColliderLayer.Enemy)
+            {
+                Debug.Log($"碰撞exit ,skillBox.curskill:{skillBox.curSkill}");
             }
 
         }

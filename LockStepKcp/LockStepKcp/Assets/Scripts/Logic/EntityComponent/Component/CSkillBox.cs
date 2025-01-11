@@ -15,7 +15,7 @@ namespace LockstepTutorial {
 #if UNITY_EDITOR
         [UnityEngine.SerializeField]
 #endif
-        private List<Skill> skills;
+        public List<Skill> skills;
 
         public override void DoStart(){
             base.DoStart();
