@@ -1,5 +1,7 @@
+using Lockstep.Math;
 using System;
 using UnityEngine;
+using UnityEngine.Windows;
 using Debug = Lockstep.Logging.Debug;
 
 namespace LockstepTutorial {
@@ -11,6 +13,11 @@ namespace LockstepTutorial {
             moveSpd = 2;
             turnSpd = 150;
             RegisterComponent(brain);
+        }
+
+        public override void DoUpdate(LFloat deltaTime)
+        {
+            base.DoUpdate(deltaTime);
         }
 
         protected override void OnDead(){

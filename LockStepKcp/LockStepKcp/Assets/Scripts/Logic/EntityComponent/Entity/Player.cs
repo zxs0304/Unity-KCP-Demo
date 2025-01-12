@@ -31,7 +31,7 @@ namespace LockstepTutorial {
           
             if (type == ECollisionEvent.Enter && other.LayerType == (int) EColliderLayer.Enemy)
             {
-                Debug.Log($"碰撞enter ,skillBox.curskill:{skillBox.curSkill}");
+                Debug.Log($"Player碰撞enter ");
                 if (skillBox.curSkill?.AnimName == "sprint" && skillBox.isFiring)
                 {
                     other.Entity.rigidbody.AddImpulse(new LVector3(true,0,4000,0));
@@ -39,7 +39,7 @@ namespace LockstepTutorial {
             }
             if (type == ECollisionEvent.Stay && other.LayerType == (int)EColliderLayer.Enemy)
             {
-                Debug.Log($"碰撞stay ,skillBox.curskill:{skillBox.curSkill}");
+                Debug.Log($"Player碰撞stay");
                 //if (skillBox.curSkill?.AnimName == "sprint" && skillBox.isFiring)
                 //{
                 //    other.Entity.rigidbody.AddImpulse(new LVector3(true, transform.forward.x * 4000, 6000, 0));
@@ -47,7 +47,7 @@ namespace LockstepTutorial {
             }
             if (type == ECollisionEvent.Exit && other.LayerType == (int)EColliderLayer.Enemy)
             {
-                Debug.Log($"碰撞exit ,skillBox.curskill:{skillBox.curSkill}");
+                Debug.Log($"player碰撞exit ");
             }
 
         }

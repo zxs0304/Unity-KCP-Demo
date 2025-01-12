@@ -161,12 +161,10 @@ namespace LockstepTutorial {
 
 
         private void _OnTriggerEnter(ColliderProxy other){
-            UnityEngine.Debug.Log($"发生碰撞: {other.Entity}");
             if (_curPart.collider.IsCircle && _curPart.collider.deg > 0) {
                 var deg = (other.Transform2D.pos - entity.transform.pos).ToDeg();
                 var playerDeg = entity.transform.deg;
                 var degDiff = playerDeg - deg;
-                UnityEngine.Debug.Log($"diff转化前: {degDiff}");
                 if (degDiff > 180)
                 {
                     degDiff -= 360;
@@ -175,7 +173,6 @@ namespace LockstepTutorial {
                 {
                     degDiff += 360;
                 }
-                UnityEngine.Debug.Log($"diff后: {degDiff}");
                 if (LMath.Abs(degDiff) <= _curPart.collider.deg) {
                     _tempTargets.Add(other);
                 }
