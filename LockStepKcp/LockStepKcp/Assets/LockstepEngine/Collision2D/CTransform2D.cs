@@ -15,8 +15,10 @@ namespace Lockstep.Collision2D {
 namespace Lockstep.Collision2D {
     [Serializable]
     public class CTransform2D {
+
+        //在2D xOy下， pos的y值 就是高度值 ，不再单独设立一个y变量
         public LVector2 pos;
-        public LFloat y;
+
         public LFloat deg; //same as Unity CW deg(up) =0
 
         public LVector2 forward {
@@ -24,9 +26,9 @@ namespace Lockstep.Collision2D {
             // 而对于2D下，forward只可能是(-1,0)和(1,0),对应于世界的x轴和y轴，此时forward不再是矩形碰撞体的上向量，而是矩形碰撞体的左向量或者右向量，(0,1)才是上向量
             get {
                 LFloat s, c;
-                var ccwDeg = (-deg + 90);
+                var ccwDeg = -deg + 90;
                 LMath.SinCos(out s, out c, LMath.Deg2Rad * ccwDeg);
-                return new LVector2(c, s);
+                return new LVector2(c, LFloat.zero).normalized;
             }
             set => deg = ToDeg(value);
         }
@@ -82,19 +84,17 @@ namespace Lockstep.Collision2D {
         }
 
         public CTransform2D(){ }
-        public CTransform2D(LVector2 pos, LFloat y) : this(pos, y, LFloat.zero){ }
-        public CTransform2D(LVector2 pos) : this(pos, LFloat.zero, LFloat.zero){ }
 
-        public CTransform2D(LVector2 pos, LFloat y, LFloat deg){
+        public CTransform2D(LVector2 pos) : this(pos , LFloat.zero){ }
+
+        public CTransform2D(LVector2 pos,  LFloat deg){
             this.pos = pos;
-            this.y = y;
             this.deg = deg;
         }
 
 
         public void Reset(){
             pos = LVector2.zero;
-            y = LFloat.zero;
             deg = LFloat.zero;
         }
 
@@ -112,26 +112,26 @@ namespace Lockstep.Collision2D {
             return dir.x * x + dir.y * y;
         }
 
-        public static Transform2D operator +(CTransform2D a, CTransform2D b){
-            return new Transform2D {pos = a.pos + b.pos, y = a.y + b.y, deg = a.deg + b.deg};
+        //TEST 2D 
+        //public static Transform2D operator +(CTransform2D a, CTransform2D b){
+        //    return new Transform2D {pos = a.pos + b.pos, y = a.y + b.y, deg = a.deg + b.deg};
+        //}
+        public static Transform2D operator +(CTransform2D a, CTransform2D b)
+        {
+            return new Transform2D { pos = a.pos + b.pos, deg = a.deg + b.deg };
         }
 
         public LVector3 Pos3 {
-            // Test2D
-            //get => new LVector3(pos.x, y, pos.y);
-            get => new LVector3(pos.x, y, LFloat.zero);
 
+            get => new LVector3(pos.x,pos.y,LFloat.zero);
             set
             {
-                //pos = new LVector2(value.x, value.z);
-                //y = value.y;
                 pos = new LVector2(value.x, value.y);
-                y = value.y;
             }
         }
 
         public override string ToString(){
-            return $"(deg:{deg} pos:{pos} y:{y})";
+            return $"(deg:{deg} pos:{pos})";
         }
     }
 
