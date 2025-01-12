@@ -39,6 +39,13 @@ namespace Lockstep.Collision2D {
         public static LVector3 ToLVector3XZ(this LVector2 vec,LFloat y){
             return new LVector3(vec.x, y,vec.y);
         }
+
+        //为了 2d下xOy时， 可视化四叉树范围 
+        public static LVector3 ToLVector3_2D(this LVector2 vec, int z = 1)
+        {
+            return new LVector3(vec.x, vec.y, LFloat.zero);
+        }
+
     }
 
     public partial class BoundsQuadTree  {

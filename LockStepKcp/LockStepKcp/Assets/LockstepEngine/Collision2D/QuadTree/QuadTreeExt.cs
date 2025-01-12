@@ -23,7 +23,7 @@ namespace Lockstep.Collision2D {
             Gizmos.color = new Color(tintVal, 0, 1.0f - tintVal);
 
             LRect thisBounds = CreateLRect(Center, new LVector2(adjLength, adjLength));
-            Gizmos.DrawWireCube(thisBounds.center.ToLVector3().ToVector3(), thisBounds.size.ToLVector3().ToVector3());
+            Gizmos.DrawWireCube(thisBounds.center.ToLVector3_2D().ToVector3_2D(), thisBounds.size.ToLVector3_2D().ToVector3_2D());
 
             if (children != null) {
                 depth++;
@@ -41,10 +41,10 @@ namespace Lockstep.Collision2D {
         /// </summary>
         public void DrawAllObjects(){
             float tintVal = (BaseLength / 20).ToFloat();
-            Gizmos.color = new Color(0, 1.0f - tintVal, tintVal, 0.25f);
-
+            //Gizmos.color = new Color(0, 1.0f - tintVal, tintVal, 0.25f);
+            Gizmos.color = Color.red;
             foreach (OctreeObject obj in objects) {
-                Gizmos.DrawCube(obj.Bounds.center.ToLVector3().ToVector3(), obj.Bounds.size.ToLVector3().ToVector3());
+                Gizmos.DrawCube(obj.Bounds.center.ToLVector3_2D().ToVector3_2D(), obj.Bounds.size.ToLVector3_2D().ToVector3_2D());
             }
 
             if (children != null) {
@@ -68,13 +68,15 @@ namespace Lockstep.Collision2D {
         public void DrawCollisionChecks(){
             int count = 0;
             foreach (LRect collisionCheck in lastBoundsCollisionChecks) {
-                Gizmos.color = new Color(1.0f, 1.0f - ((float) count / numCollisionsToSave), 1.0f);
-                Gizmos.DrawCube(collisionCheck.center.ToLVector3().ToVector3(), collisionCheck.size.ToLVector3().ToVector3());
+                //Gizmos.color = new Color(1.0f, 1.0f - ((float) count / numCollisionsToSave), 1.0f);
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawCube(collisionCheck.center.ToLVector3_2D().ToVector3_2D(), collisionCheck.size.ToLVector3_2D().ToVector3_2D());
                 count++;
             }
 
             foreach (Ray collisionCheck in lastRayCollisionChecks) {
-                Gizmos.color = new Color(1.0f, 1.0f - ((float) count / numCollisionsToSave), 1.0f);
+                //Gizmos.color = new Color(1.0f, 1.0f - ((float) count / numCollisionsToSave), 1.0f);
+                Gizmos.color = Color.yellow;
                 Gizmos.DrawRay(collisionCheck.origin, collisionCheck.direction);
                 count++;
             }

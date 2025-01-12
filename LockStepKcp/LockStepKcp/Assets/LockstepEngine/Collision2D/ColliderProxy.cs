@@ -33,15 +33,18 @@ namespace Lockstep.Collision2D {
 
         private static int autoIncId = 0;
 
-        public void Init(ColliderPrefab prefab, LVector2 pos, LFloat y){
+        public void Init(ColliderPrefab prefab, LVector2 pos, LFloat y)
+        {
             Init(prefab, pos, y, LFloat.zero);
         }
 
-        public void Init(ColliderPrefab prefab, LVector2 pos){
+        public void Init(ColliderPrefab prefab, LVector2 pos)
+        {
             Init(prefab, pos, LFloat.zero, LFloat.zero);
         }
-        public void Init(ColliderPrefab prefab, LVector2 pos, LFloat y, LFloat deg){
-            Init(prefab, new CTransform2D(pos, y, deg));
+        public void Init(ColliderPrefab prefab, LVector2 pos, LFloat y, LFloat deg)
+        {
+            Init(prefab, new CTransform2D(pos, deg));
         }
         public void Init(ColliderPrefab prefab, CTransform2D trans){
             this.Prefab = prefab;
@@ -66,8 +69,8 @@ namespace Lockstep.Collision2D {
                 IsMoved = true;
             }
         }
-        
-        
+
+
         public bool IsMoved = true;
 
         public LVector2 pos {
@@ -79,10 +82,10 @@ namespace Lockstep.Collision2D {
         }
 
         public LFloat y {
-            get => Transform2D.y;
+            get => Transform2D.pos.y;
             set {
                 IsMoved = true;
-                Transform2D.y = value;
+                Transform2D.pos.y = value;
             }
         }
 
