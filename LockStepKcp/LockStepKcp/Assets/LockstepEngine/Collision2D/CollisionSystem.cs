@@ -130,10 +130,17 @@ namespace Lockstep.Collision2D {
                 var val = pair.Key;
                 if (!val.IsStatic) {
                     val.DoUpdate(deltaTime);
-                    if (val.IsMoved) {
-                        val.IsMoved = false;
-                        tempLst.Add(val);
-                    }
+                    // 不应该只把移动了的物体加入tempList，应该对于所有物体都进行四叉树检测
+                    //否则可能会导致：碰撞函数的触发多次或不触发
+                    //原逻辑: 只对移动了的物体进行碰撞检测，NotifyCollisionEvent中调用两个物体的碰撞函数(有bug)
+                    //现逻辑：所有移动和不动的物体都进行碰撞检测，NotifyCollisionEvent中只调用第一个物体的碰撞函数
+
+                    //if (val.IsMoved) {
+                    //    val.IsMoved = false;
+                    //    tempLst.Add(val);
+                    //}
+
+                    tempLst.Add(val);
                 }
             }
 
@@ -160,6 +167,11 @@ namespace Lockstep.Collision2D {
                 for (int i = 0; i < LayerCount; i++) {
                     if (InterestingMasks[val.LayerType * LayerCount + i]) {
                         var boundsTree = GetBoundTree(i);
+                        //原逻辑：
+                        //CheckCollision只检测 当前帧中，移动了的物体是否发生了碰撞
+                        //若移动了的物体发生了碰撞，那么将碰撞对 更新到 _curPairs中
+                        //现逻辑：
+                        //CheckCollision检测 所有的物体是否发生碰撞，并更新碰撞对 到  _curPairs中
                         boundsTree.CheckCollision(val, bound);
                     }
                 }
@@ -167,6 +179,18 @@ namespace Lockstep.Collision2D {
 
             Profiler.EndSample();
             Profiler.BeginSample("CheckLastFrameCollison");
+
+            //原逻辑：
+            // 此时_curPairs中存储的是当前帧中 (移动 且 发生碰撞的)  碰撞对
+            // 从_prePairs中删除掉这些后，_prePairs中剩下的就是 ：
+            // 1. (上一帧中发生了碰撞 且 这一帧移动了但没再碰撞的）碰撞对，这些应该调用exit
+            // 2. (上一帧中发生了碰撞 且 这一帧没有移动的）碰撞对，这些应该调用stay
+
+            //现逻辑：
+            // 此时_curPairs中存储的是当前帧中所有 发生碰撞的 碰撞对
+            // 从_prePairs中删除掉这些后，_prePairs中剩下的就只有 ：
+            // 1. (上一帧中发生了碰撞 且 没再碰撞的) 碰撞对，这些应该调用exit
+            // 因此不会再调用下面这个stay
             foreach (var pairId in _curPairs) {
                 _prePairs.Remove(pairId);
             }
@@ -183,6 +207,7 @@ namespace Lockstep.Collision2D {
                     (a.Prefab, a.Transform2D, b.Prefab, b.Transform2D);
                 if (isCollided) {
                     _curPairs.Add(idPair);
+                    //现逻辑: 不会调用
                     NotifyCollisionEvent(a, b, ECollisionEvent.Stay);
                 }
                 else {
@@ -201,31 +226,38 @@ namespace Lockstep.Collision2D {
         }
 
         public void OnQuadTreeCollision(ColliderProxy a, ColliderProxy b){
-            var pairId = (((long) a.Id) << 32) + b.Id;
+            var pairId = (((long)a.Id) << 32) + b.Id;
             if (_curPairs.Contains(pairId)) return;
             bool isCollided = CollisionHelper.CheckCollision
                 (a.Prefab, a.Transform2D, b.Prefab, b.Transform2D);
-            if (isCollided) {
+            if (isCollided)
+            {
                 _curPairs.Add(pairId);
                 var type = _prePairs.Contains(pairId) ? ECollisionEvent.Stay : ECollisionEvent.Enter;
                 NotifyCollisionEvent(a, b, type);
             }
         }
 
+        //为了防止多次触发碰撞函数，在NotifyCollisionEvent中，只调用a的碰撞函数
+        //因为在DoUpdate执行碰撞检测player时,会执行NotifyCollisionEvent( player , enermy , ...)
+        //同时在检测enermy时，也会执行NotifyCollisionEvent (enermy , player , ...)
+        //如果在NotifyCollisionEvent中分别调用a 和 b的碰撞函数，那么一次碰撞，将会每人都触发两次碰撞函数
         public void NotifyCollisionEvent(ColliderProxy a, ColliderProxy b, ECollisionEvent type){
-            funcGlobalOnTriggerEvent?.Invoke(a, b, type);
-            //UnityEngine.Debug.Log($"发生碰撞时a：entity {a.Entity.GetHashCode()}  entityId:{a.Entity.EntityId} entityTrans:{a.Entity.transform.Pos3} isstatic:{a.IsStatic} ontriggerEvent:{a.OnTriggerEvent}");
-            //UnityEngine.Debug.Log($"发生碰撞时b：entity {b.Entity.GetHashCode()}  entityId:{b.Entity.EntityId} entityTrans:{b.Entity.transform.Pos3} isstatic:{b.IsStatic} ontriggerEvent:{b.OnTriggerEvent}");
+            
+            //UnityEngine.Debug.Log($"{a.Entity}被发生碰撞:{type}  , event:  {a.OnTriggerEvent} trans:{a.Entity.transform} ");
             if (!a.IsStatic) {
                 a.OnTriggerEvent?.Invoke(b, type);
-                
                 //TriggerEvent(a, b, type);
             }
 
-            if (!b.IsStatic) {
-                b.OnTriggerEvent?.Invoke(a, type);
-                //TriggerEvent(b, a, type);
-            }
+            //if (!b.IsStatic)
+            //{
+            //    b.OnTriggerEvent?.Invoke(a, type);
+            //    //TriggerEvent(b, a, type);
+            //}
+
+            //另一种回调碰撞函数的方式，用不到
+            //funcGlobalOnTriggerEvent?.Invoke(a, b, type);
         }
 
         void TriggerEvent(ColliderProxy a, ColliderProxy other, ECollisionEvent type){
@@ -265,7 +297,7 @@ namespace Lockstep.Collision2D {
         public int ShowTreeId { get; set; }
 
         public void DrawGizmos(){
-            var boundsTree = GetBoundTree(ShowTreeId);
+            var boundsTree = GetBoundTree(1);
             if (boundsTree == null) return;
 #if UNITY_EDITOR
             boundsTree.DrawAllBounds(); // Draw node boundaries
@@ -274,6 +306,16 @@ namespace Lockstep.Collision2D {
 #endif
             // pointTree.DrawAllBounds(); // Draw node boundaries
             // pointTree.DrawAllObjects(); // Mark object positions
+
+
+            var boundsTree2 = GetBoundTree(2);
+            if (boundsTree2 == null) return;
+#if UNITY_EDITOR
+            boundsTree2.DrawAllBounds(); // Draw node boundaries
+            boundsTree2.DrawAllObjects(); // Draw object boundaries
+            boundsTree2.DrawCollisionChecks(); // Draw the last *numCollisionsToSave* collision check boundaries
+#endif
+
         }
     }
 }
