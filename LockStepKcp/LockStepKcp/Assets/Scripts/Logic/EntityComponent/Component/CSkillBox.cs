@@ -83,9 +83,10 @@ namespace LockstepTutorial {
 
                 UnityEngine.Debug.Log("发射子弹");
                 Bullet bullet = new Bullet();
-                var prefab = ResourceManager.LoadPrefab(0);
-                var config = ResourceManager.GetPlayerConfig(0);
-                var obj = UnityEntityService.CreateEntity(bullet, 0, new LVector3(0,5,0), prefab, config);
+                var prefab = ResourceManager.LoadPrefab(20);
+                var config = ResourceManager.GetBulletConfig(20);
+                var obj = UnityEntityService.CreateEntity(bullet,20, new LVector3(0,3,0), prefab, config);
+                GameManager.allBullets.Add(bullet);
             }
         }
 

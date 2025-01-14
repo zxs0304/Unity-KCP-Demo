@@ -32,6 +32,10 @@ namespace LockstepTutorial {
         public static EnemyConfig GetEnemyConfig(int id){
             return Instance.config.GetEnemyConfig(id - 10);
         }
+        public static BulletConfig GetBulletConfig(int id)
+        {
+            return Instance.config.GetBulletConfig(id - 20);
+        }
 
         GameObject _LoadPrefab(int id){
             if (_id2Prefab.TryGetValue(id, out var val)) {

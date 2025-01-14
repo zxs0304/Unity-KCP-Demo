@@ -218,6 +218,7 @@ namespace Lockstep.Collision2D {
             Profiler.EndSample();
         }
 
+        //检测 如果是同一个LayerType 则返回false
         bool NeedCheck(ColliderProxy a, ColliderProxy b){
             var val = _collisionMask[a.LayerType];
             var val2 = 1 << b.LayerType;

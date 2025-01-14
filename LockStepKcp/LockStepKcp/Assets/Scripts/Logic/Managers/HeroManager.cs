@@ -24,6 +24,10 @@ namespace LockstepTutorial{
             foreach (var player in GameManager.allPlayers) {
                 player.DoUpdate(deltaTime);
             }
+            foreach (var bullet in GameManager.allBullets)
+            {
+                bullet.DoUpdate(deltaTime);
+            }
         }
     }
 }
