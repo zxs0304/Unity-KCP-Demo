@@ -72,10 +72,18 @@ namespace LockstepTutorial {
         public Player entity = new Player();
     }
 
+    [Serializable]
+    public class BulletConfig : EntityConfig
+    {
+        public override object Entity => entity;
+        public Bullet entity = new Bullet();
+    }
+
     [CreateAssetMenu(menuName = "GameConfig")]
     public class GameConfig : ScriptableObject {
         public List<EnemyConfig> enemies = new List<EnemyConfig>();
         public List<PlayerConfig> player = new List<PlayerConfig>();
+        public List<BulletConfig> bullet = new List<BulletConfig>();
 
         public EnemyConfig GetEnemyConfig(int id){
             return enemies[id];
@@ -83,6 +91,11 @@ namespace LockstepTutorial {
 
         public PlayerConfig GetPlayerConfig(int id){
             return player[id];
+        }
+
+        public BulletConfig GetBulletConfig(int id)
+        {
+            return bullet[id];
         }
     }
 }

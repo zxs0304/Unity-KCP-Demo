@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Lockstep.ECS.ECDefine;
 using Lockstep.Logging;
 using Lockstep.Logic;
 using Lockstep.Math;
+using UnityEngine.UIElements;
 
 namespace LockstepTutorial {
     [Serializable]
@@ -76,6 +78,15 @@ namespace LockstepTutorial {
             curSkill = skill;
             isFiring = true;
             entity.isInvincible = true;
+            if (skill.SkillInfo.animName == "bullet")
+            {
+
+                UnityEngine.Debug.Log("发射子弹");
+                Bullet bullet = new Bullet();
+                var prefab = ResourceManager.LoadPrefab(0);
+                var config = ResourceManager.GetPlayerConfig(0);
+                var obj = UnityEntityService.CreateEntity(bullet, 0, new LVector3(0,5,0), prefab, config);
+            }
         }
 
         public void OnSkillDone(Skill skill){
