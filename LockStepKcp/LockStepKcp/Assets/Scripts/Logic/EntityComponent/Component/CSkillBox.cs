@@ -80,13 +80,9 @@ namespace LockstepTutorial {
             entity.isInvincible = true;
             if (skill.SkillInfo.animName == "bullet")
             {
-
                 UnityEngine.Debug.Log("发射子弹");
-                Bullet bullet = new Bullet(entity);
-                var prefab = ResourceManager.LoadPrefab(20);
-                var config = ResourceManager.GetBulletConfig(20);
-                var obj = UnityEntityService.CreateEntity(bullet,20,entity.transform.Pos3, prefab, config);
-                GameManager.allBullets.Add(bullet);
+                var bullet = BulletManager.InstantiateEntity(20, entity, entity.transform.Pos3);
+                BulletManager.Instance.AddBullet(bullet as Bullet);
             }
         }
 

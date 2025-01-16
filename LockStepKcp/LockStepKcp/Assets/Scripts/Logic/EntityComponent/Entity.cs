@@ -14,7 +14,7 @@ namespace LockstepTutorial {
         public int curHealth;
         public int maxHealth = 100;
         public int damage = 10;
-
+        public bool showFloatBar = true;
         public bool isInvincible;
         public bool isFire;
 

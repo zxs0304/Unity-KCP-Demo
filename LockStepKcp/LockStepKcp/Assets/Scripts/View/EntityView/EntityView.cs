@@ -12,7 +12,10 @@ namespace LockstepTutorial {
         public virtual void BindEntity(BaseEntity entity){
             this.entity = entity as Entity;
             this.entity.EntityView = this;
-            uiFloatBar = FloatBarManager.CreateFloatBar(transform, this.entity.curHealth, this.entity.maxHealth);
+            if (this.entity.showFloatBar)
+            {
+                uiFloatBar = FloatBarManager.CreateFloatBar(transform, this.entity.curHealth, this.entity.maxHealth);
+            }
             //TestRigidBody
             //transform.position = this.entity.transform.Pos3.ToVector3();
             transform.position = this.entity.transform.Pos3.ToVector3_2D();
@@ -33,7 +36,7 @@ namespace LockstepTutorial {
             //var pos = entity.transform.Pos3.ToVector3();
             var pos = entity.transform.Pos3.ToVector3_2D();
 
-            transform.position = Vector3.Lerp(transform.position, pos, 0.3f);
+            transform.position = Vector3.Lerp(transform.position, pos, 0.5f);
 
             //TEST2d
             //var deg = entity.transform.deg.ToFloat();

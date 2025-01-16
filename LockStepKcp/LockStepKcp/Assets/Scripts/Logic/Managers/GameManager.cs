@@ -49,7 +49,6 @@ namespace LockstepTutorial {
         public Dictionary<int, float> tick2SendTimer = new Dictionary<int, float>();
 
         [Header("GameData")] public static List<Player> allPlayers = new List<Player>();
-        public static List<Bullet> allBullets = new List<Bullet>();
         public static Player MyPlayer;
         public static Transform MyPlayerTrans;
         [HideInInspector] public float remainTime; // remain time to update

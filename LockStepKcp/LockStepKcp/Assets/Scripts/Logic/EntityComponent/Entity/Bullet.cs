@@ -16,7 +16,6 @@ namespace LockstepTutorial
             this.Owner = owner;
             OnTriggerEvent = OnCollision;
             RegisterComponent(Cfly);
-
         }
 
         public override void DoStart()
@@ -35,7 +34,7 @@ namespace LockstepTutorial
 
         protected override void OnDead()
         {
-            GameManager.allBullets.Remove(this);
+            BulletManager.Instance.RemoveBullet(this);
             CollisionManager.Instance.RemoveCollider(this);
         }
 
@@ -46,6 +45,7 @@ namespace LockstepTutorial
             if (type == ECollisionEvent.Enter)
             {
                 other.Entity.TakeDamage(damage,other.Entity.transform.Pos3);
+                other.Entity.rigidbody.AddImpulse(new LVector3(0,1,0));
                 Debug.Log($"player碰撞enter ");
             }
             if (type == ECollisionEvent.Stay )

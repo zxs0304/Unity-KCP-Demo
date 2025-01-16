@@ -88,7 +88,7 @@ namespace Lockstep.Collision2D {
             _tempPos = pos;
             var radius = size.magnitude;
             var checkBounds = LRect.CreateRect(pos, new LVector2(radius, radius));
-            UnityEngine.Debug.Log($"checkBounds:{checkBounds} ");
+            //UnityEngine.Debug.Log($"checkBounds:{checkBounds} ");
             GetBoundTree(layerType).CheckCollision(ref checkBounds, _CheckRegionOBB);
         }
 
