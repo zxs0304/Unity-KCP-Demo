@@ -220,10 +220,12 @@ namespace Lockstep.Collision2D {
 
         //检测 如果是同一个LayerType 则返回false
         bool NeedCheck(ColliderProxy a, ColliderProxy b){
-            var val = _collisionMask[a.LayerType];
-            var val2 = 1 << b.LayerType;
-            var needCheck = (val & val2) != 0;
-            return needCheck;
+            //var val = _collisionMask[a.LayerType];
+            //var val2 = 1 << b.LayerType;
+            //var needCheck = (val & val2) != 0;
+            //return needCheck;
+
+            return true;
         }
 
         public void OnQuadTreeCollision(ColliderProxy a, ColliderProxy b){

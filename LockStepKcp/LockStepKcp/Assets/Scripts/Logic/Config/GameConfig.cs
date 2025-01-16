@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Lockstep.Logic;
@@ -23,13 +23,18 @@ namespace LockstepTutorial {
             foreach (var field in fields) {
                 var type = field.FieldType;
 
-                //Èç¹û×Ö¶ÎÊÇlocalId,ÔòÓ¦¸Ã±£³ÖÊµ¼Ê¶ÔÏóµÄlocalId£¬²»Ó¦¸Ã¿½±´config¶ÔÏóµÄ
+                //å¦‚æžœå±žæ€§åæ˜¯localIdï¼Œé‚£ä¹ˆä¸åº”è¯¥æ‹·è´configçš„localIdï¼Œè€Œæ˜¯åº”è¯¥ä¿æŒæ¯ä¸ªå¯¹è±¡æž„é€ æ—¶è‡ªå·±çš„localId
                 if (field.Name == "localId") 
                 {
                     continue;
                 }
-                //Èç¹û×Ö¶ÎÊÇÒ»¸öÎ¯ÍÐÀàÐÍ,ÔòÓ¦¸Ã±£³ÖÊµ¼Ê¶ÔÏóµÄÎ¯ÍÐ£¬²»Ó¦¸Ã¿½±´config¶ÔÏóµÄÎ¯ÍÐ,·ñÔòÊµ¼ÊÖ´ÐÐµÄÊ±ºò£¬Ö´ÐÐµÄÊÇconfig¶ÔÏóµÄº¯Êý
+                //å¦‚æžœå±žæ€§æ˜¯ä¸€ä¸ªå§”æ‰˜ç±»åž‹ (OnTriggerEvent)ï¼Œé‚£ä¹ˆä¸åº”è¯¥æ‹·è´configçš„å§”æ‰˜çš„å€¼ï¼Œå¦åˆ™åˆ°æ—¶å€™è°ƒç”¨å§”æ‰˜çš„æ—¶å€™ï¼Œä¼šè§¦å‘configå¯¹è±¡çš„å‡½æ•°ï¼
                 if (type.IsSubclassOf(typeof(MulticastDelegate)))
+                {
+                    continue;
+                }
+                //å¦‚æžœå±žæ€§æ˜¯ä¸€ä¸ªBaseEntity (Owner)ï¼Œé‚£ä¹ˆä¸åº”è¯¥æ‹·è´configçš„å€¼
+                if (type.IsSubclassOf(typeof(BaseEntity)))
                 {
                     continue;
                 }
@@ -76,7 +81,7 @@ namespace LockstepTutorial {
     public class BulletConfig : EntityConfig
     {
         public override object Entity => entity;
-        public Bullet entity = new Bullet();
+        public Bullet entity = new Bullet(null);
     }
 
     [CreateAssetMenu(menuName = "GameConfig")]

@@ -34,8 +34,9 @@ namespace LockstepTutorial {
             var pos = entity.transform.Pos3.ToVector3_2D();
 
             transform.position = Vector3.Lerp(transform.position, pos, 0.3f);
-            var deg = entity.transform.deg.ToFloat();
+
             //TEST2d
+            //var deg = entity.transform.deg.ToFloat();
             //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, deg, 0), 0.3f);
         }
 

@@ -2,7 +2,7 @@
 using Lockstep.Math;
 namespace LockstepTutorial
 {
-	public interface IBulletView : IView
+	public interface IBulletView : IEntityView
 	{
 
     }

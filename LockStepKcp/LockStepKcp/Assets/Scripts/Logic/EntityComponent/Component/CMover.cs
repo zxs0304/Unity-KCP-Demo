@@ -7,10 +7,8 @@ namespace LockstepTutorial {
     
     [Serializable]
     public partial class CMover : Component {
-        public Player player { get; private set; }
+        public Player player { get;  set; }
         public PlayerInput input => player.input;
-
-        
         static LFloat _sqrStopDist = new LFloat(true, 40);
         public LFloat speed => player.moveSpd;
         public bool hasReachTarget = false;

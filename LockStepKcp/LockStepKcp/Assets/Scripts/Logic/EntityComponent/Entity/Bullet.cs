@@ -6,16 +6,17 @@ using UnityEngine;
 namespace LockstepTutorial
 {
     [Serializable]
-    public class Bullet : BaseEntity
+    public class Bullet : Entity
     {
-        public IBulletView BulletView;
-        public LFloat moveSpd = 10;
-        public int damage = 10;
-        public Entity owner; //创建者
+        public Entity Owner { get; private set; }//创建者
+        public CBulletFly Cfly = new CBulletFly();
 
-        public Bullet()
+        public Bullet(Entity owner)
         {
+            this.Owner = owner;
             OnTriggerEvent = OnCollision;
+            RegisterComponent(Cfly);
+
         }
 
         public override void DoStart()
@@ -25,9 +26,18 @@ namespace LockstepTutorial
         public override void DoUpdate(LFloat deltaTime)
         {
             base.DoUpdate(deltaTime);
+            if (transform.pos.x.Abs() > 100)
+            {
+                OnDead();
+                EntityView.OnDead();
+            }
         }
 
-        protected virtual void OnTakeDamage(int amount, LVector3 hitPoint) { }
+        protected override void OnDead()
+        {
+            GameManager.allBullets.Remove(this);
+            CollisionManager.Instance.RemoveCollider(this);
+        }
 
 
         public void OnCollision(ColliderProxy other, ECollisionEvent type)
@@ -35,6 +45,7 @@ namespace LockstepTutorial
             Debug.Log($"bullet碰撞 ");
             if (type == ECollisionEvent.Enter)
             {
+                other.Entity.TakeDamage(damage,other.Entity.transform.Pos3);
                 Debug.Log($"player碰撞enter ");
             }
             if (type == ECollisionEvent.Stay )

@@ -47,7 +47,11 @@ namespace LockstepTutorial {
                     movingStep = distToTarget;
                 }
 
-                var toTarget = (targetPos - currentPos).normalized;
+                //只能在地面左右移动
+                var dir = targetPos - currentPos;
+                dir.y = 0;
+
+                var toTarget = dir.normalized;
                 transform.pos = transform.pos + toTarget * movingStep;
             }
             else {
