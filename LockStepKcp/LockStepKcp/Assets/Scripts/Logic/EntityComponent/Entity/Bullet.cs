@@ -41,20 +41,19 @@ namespace LockstepTutorial
 
         public void OnCollision(ColliderProxy other, ECollisionEvent type)
         {
-            Debug.Log($"bullet碰撞 ");
             if (type == ECollisionEvent.Enter)
             {
                 other.Entity.TakeDamage(damage,other.Entity.transform.Pos3);
-                other.Entity.rigidbody.AddImpulse(new LVector3(0,1,0));
-                Debug.Log($"player碰撞enter ");
+                other.Entity.rigidbody.AddImpulse(new LVector3(0,3,0));
+                Debug.Log($"bullet碰撞enter ");
             }
             if (type == ECollisionEvent.Stay )
             {
-                Debug.Log($"player碰撞exit ");
+                Debug.Log($"bullet碰撞stay ");
             }
             if (type == ECollisionEvent.Exit)
             {
-                Debug.Log($"player碰撞exit ");
+                Debug.Log($"bullet碰撞exit ");
             }
 
         }

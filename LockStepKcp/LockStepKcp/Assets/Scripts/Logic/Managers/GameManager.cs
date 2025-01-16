@@ -52,8 +52,8 @@ namespace LockstepTutorial {
         public static Player MyPlayer;
         public static Transform MyPlayerTrans;
         [HideInInspector] public float remainTime; // remain time to update
-        //private NetClient netClient;
-        private KcpNetClient netClient;
+        private NetClient netClient;
+        //private KcpNetClient netClient;
         private List<UnityBaseManager> _mgrs = new List<UnityBaseManager>();
         
         private static string _traceLogPath {
@@ -113,8 +113,8 @@ namespace LockstepTutorial {
 
             Debug.Trace("Before StartGame _IdCounter" + BaseEntity.IdCounter);
             if (!IsReplay && !IsClientMode) {
-                //netClient = new NetClient();
-                netClient = new KcpNetClient();
+                netClient = new NetClient();
+                //netClient = new KcpNetClient();
 
                 netClient.Start();
                 netClient.Send(new Msg_JoinRoom() {name = Application.dataPath});
@@ -132,24 +132,26 @@ namespace LockstepTutorial {
             //比如我这一帧update中按下了空格,并且赋值给CurGameInput，但是此帧没有发送
             //然后后续下一帧没按空格的数据覆盖了CurGameInput，然后发送了数据。
             //remainTime += Time.deltaTime;
-            //while (remainTime >= 0.03f)
+            //while (remainTime >= 0.01f)
             //{
-            //    remainTime -= 0.03f;
+            //    remainTime -= 0.01f;
 
-            //send input
-            if (!IsReplay)
-            {
-                SendInput();
-            }
+                //send input
+                //UnityEngine.Debug.Log($"deltaTime:{Time.deltaTime}");
+                //UnityEngine.Debug.LogWarning($"FixedDeltaTime{Time.fixedDeltaTime}");
+                if (!IsReplay)
+                {
+                    SendInput();
+                }
 
-            if (GetFrame(curFrameIdx) == null)
-            {
-                return;
-            }
+                if (GetFrame(curFrameIdx) == null)
+                {
+                    return;
+                }
 
-            Step();
-            //}
-        }
+                Step();
+        //}
+    }
 
         public static void StartGame(Msg_StartGame msg){
             UnityEngine.Debug.Log($"StartGame  LocalPlayerId:{msg.localPlayerId}");
@@ -230,8 +232,13 @@ namespace LockstepTutorial {
                     tick = curFrameIdx,
                     hash = GetHash()
                 });
+
+                //UnityEngine.Debug.Log($"tick:{curFrameIdx} , hash{localPlayerId}, {GetHash()}");
+
                 TraceHelper.TraceFrameState();
                 curFrameIdx++;
+
+
             }
         }
 
@@ -245,8 +252,8 @@ namespace LockstepTutorial {
         }
 
         private void _Update(){
-            //var deltaTime = new LFloat(true, 30);
-            var deltaTime = Time.deltaTime.ToLFloat();
+            var deltaTime = new LFloat(true, 15);
+            //var deltaTime = Time.deltaTime.ToLFloat();
             DoUpdate(deltaTime);
             foreach (var mgr in _mgrs) {
                 mgr.DoUpdate(deltaTime);
