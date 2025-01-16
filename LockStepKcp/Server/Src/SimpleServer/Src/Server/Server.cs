@@ -13,7 +13,10 @@ namespace Lockstep.FakeServer{
         private NetOuterProxy _netProxy = new NetOuterProxy();
 
         //update
-        private const double UpdateInterval = 0.015; //frame rate = 30
+        //这个时间与服务器收发消息无关，收发消息是一直在进行的，这个间隔表示服务器下发一次逻辑帧的间隔
+        //0.015表示0.015秒钟进行一次checkInput()，检查是否要发送, 具体取决于网速 和 玩家的输入频率
+        //(实际上这个框架在接收到消息的时候也会进行checkInput，因此这个间隔没什么用，只要当服务器收到全部玩家的输入时，就会立即下发逻辑帧)
+        private const double UpdateInterval = 0.015; //frame rate = 66
         private DateTime _lastUpdateTimeStamp;
         private DateTime _startUpTimeStamp;
         private double _deltaTime;
