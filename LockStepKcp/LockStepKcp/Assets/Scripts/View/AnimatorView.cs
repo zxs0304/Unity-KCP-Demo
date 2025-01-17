@@ -1,4 +1,6 @@
+using Lockstep.Logic;
 using Lockstep.Math;
+using LockstepTutorial;
 using UnityEngine;
 
 public class AnimatorView : MonoBehaviour, IAnimatorView {
@@ -17,7 +19,14 @@ public class AnimatorView : MonoBehaviour, IAnimatorView {
             }
         }
     }
-    
+
+    public virtual void BindEntity(BaseEntity entity)
+    {
+        UnityEngine.Debug.Log("Animator Bind");
+        var curEntity = entity as Entity;
+        cAnim = curEntity.animator;
+    }
+
     public void SetInteger(string name, int val){
         anim.SetInteger(name, val);
     }

@@ -55,7 +55,9 @@ namespace LockstepTutorial {
         private NetClient netClient;
         //private KcpNetClient netClient;
         private List<UnityBaseManager> _mgrs = new List<UnityBaseManager>();
-        
+        public List<bool> isJumps = new();
+
+
         private static string _traceLogPath {
             get {
 #if UNITY_STANDALONE_OSX
@@ -131,15 +133,16 @@ namespace LockstepTutorial {
             //如果用 reaminTime来限制发送速率的话，会导致数据没有及时发送而被覆盖，因为unity的update频率是很快的，帧率高的时候，不到0.01秒就会update一次
             //比如我这一帧update中按下了空格,并且赋值给CurGameInput，但是此帧没有发送
             //然后后续下一帧没按空格的数据覆盖了CurGameInput，然后发送了数据。
+            //解决方案：记录下0.03秒内所有的update中的bool数据(是否跳跃) 在客户端发送时，检测只要有一个为true，就表示按下了跳跃，然后清空list
 
             //如果不加以限制，那么客户端发送帧的间隔就是unity的Time.deltaTime，这取决于渲染的速度
-            //但是在DoUpdate(Lfloat deltaTime)中的参数并不能传Time.deltaTime
+            //但是在DoUpdate(Lfloat deltaTime)中的参数并不能传Time.deltaTime，因为每个客户端的Time.deltaTime不同
             //假设Time.deltaTime = 0.01左右，但是DoUpdate中传的是0.02，这其实也不影响同步，就相当于大家的帧间间隔都加长了(原本应该是0.01左右)，位移的都更远了
 
-            //remainTime += Time.deltaTime;
-            //while (remainTime >= 0.03f)
-            //{
-            //    remainTime -= 0.03f;
+            remainTime += Time.deltaTime;
+            while (remainTime >= 0.03f)
+            {
+                remainTime -= 0.03f;
 
                 //send input
                 //UnityEngine.Debug.Log($"deltaTime:{Time.deltaTime}");
@@ -155,7 +158,7 @@ namespace LockstepTutorial {
                 }
 
                 Step();
-            //}
+            }
         }
 
         public static void StartGame(Msg_StartGame msg){
@@ -198,6 +201,16 @@ namespace LockstepTutorial {
 
         public void SendInput(){
             if (IsClientMode) {
+
+                foreach (var isjump in isJumps)
+                {
+                    if (isjump)
+                    {
+                        CurGameInput.isSpeedUp = true;
+                    }
+                }
+                isJumps.Clear();
+
                 PushFrameInput(new FrameInput() {
                     tick = curFrameIdx,
                     inputs = new PlayerInput[] {CurGameInput}
@@ -211,13 +224,22 @@ namespace LockstepTutorial {
             }
 
             var playerInput = CurGameInput;
+
+            foreach (var item in isJumps)
+            {
+                if (item)
+                {
+                    playerInput.isSpeedUp = true;
+                }
+            }
+            isJumps.Clear();
+
             netClient?.Send(new Msg_PlayerInput() {
                 input = playerInput,
                 tick = inputTick
             });
-            //UnityEngine.Debug.Log("" + playerInput.inputUV);
+            //UnityEngine.Debug.Log("发送时 是否跳跃：" + playerInput.isSpeedUp);
             tick2SendTimer[inputTick] = Time.realtimeSinceStartup;
-            //UnityEngine.Debug.Log("SendInput " + inputTick);
             inputTick++;
         }
 
@@ -257,7 +279,7 @@ namespace LockstepTutorial {
         }
 
         private void _Update(){
-            var deltaTime = new LFloat(true, 15);
+            var deltaTime = new LFloat(true, 30);
             //var deltaTime = Time.deltaTime.ToLFloat();
             DoUpdate(deltaTime);
             foreach (var mgr in _mgrs) {

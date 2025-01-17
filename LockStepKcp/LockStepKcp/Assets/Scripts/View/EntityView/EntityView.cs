@@ -32,11 +32,13 @@ namespace LockstepTutorial {
         }
 
         private void Update(){
-            //TestRigidBody
+            //TestR
             //var pos = entity.transform.Pos3.ToVector3();
             var pos = entity.transform.Pos3.ToVector3_2D();
 
-            transform.position = Vector3.Lerp(transform.position, pos, 0.5f);
+
+            transform.position = Vector3.Lerp(transform.position, pos, 0.37f);
+
 
             //TEST2d
             //var deg = entity.transform.deg.ToFloat();

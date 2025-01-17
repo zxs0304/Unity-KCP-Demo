@@ -46,6 +46,7 @@ namespace LockstepTutorial {
                 }
 
                 isSpeedUp = Input.GetKeyDown(KeyCode.Space);
+                GameManager.Instance.isJumps.Add(isSpeedUp);
                 GameManager.CurGameInput =  new PlayerInput() {
                     mousePos = mousePos,
                     inputUV = inputUV,

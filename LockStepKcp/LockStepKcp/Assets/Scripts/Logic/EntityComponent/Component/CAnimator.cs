@@ -6,7 +6,7 @@ using Lockstep.Math;
 using LockstepTutorial;
 using Debug = Lockstep.Logging.Debug;
 
-public interface IAnimatorView {
+public interface IAnimatorView :IView{
     void Play(string name, bool isCross);
     void Sample(LFloat time);
 }
