@@ -15,6 +15,7 @@ namespace LockstepTutorial
         {
             this.Owner = owner;
             OnTriggerEvent = OnCollision;
+            transform.forward = owner.transform.forward;
             RegisterComponent(Cfly);
         }
 
@@ -25,7 +26,7 @@ namespace LockstepTutorial
         public override void DoUpdate(LFloat deltaTime)
         {
             base.DoUpdate(deltaTime);
-            if (transform.pos.x.Abs() > 100)
+            if (transform.pos.x.Abs() > 80)
             {
                 OnDead();
                 EntityView.OnDead();
@@ -44,7 +45,7 @@ namespace LockstepTutorial
             if (type == ECollisionEvent.Enter)
             {
                 other.Entity.TakeDamage(damage,other.Entity.transform.Pos3);
-                other.Entity.rigidbody.AddImpulse(new LVector3(0,3,0));
+                other.Entity.rigidbody.AddImpulse(new LVector3(1,3,0) * Cfly.flyDir);
                 Debug.Log($"bullet碰撞enter ");
             }
             if (type == ECollisionEvent.Stay )

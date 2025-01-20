@@ -29,15 +29,29 @@ using UnityEngine;
 // Using a LINQ expression is worse again than Foreach.
 namespace Lockstep.Collision2D {
     public static partial class LRectExt {
-        public static LVector2 ToLVector2XZ(this LVector3 vec){
+        public static LVector2 ToLVector2XZ(this LVector3 vec)
+        {
             return new LVector2(vec.x, vec.z);
         }
 
-        public static LVector3 ToLVector3(this LVector2 vec, int y = 1){
+        public static LVector3 ToLVector3(this LVector2 vec, int y = 1)
+        {
             return new LVector3(vec.x, y.ToLFloat(), vec.y);
         }
-        public static LVector3 ToLVector3XZ(this LVector2 vec,LFloat y){
-            return new LVector3(vec.x, y,vec.y);
+        //public static LVector3 ToLVector3XZ(this LVector2 vec, LFloat y)
+        //{
+        //    return new LVector3(vec.x, y, vec.y);
+        //}
+
+        //
+        public static LVector2 ToLVector2XY(this LVector3 vec)
+        {
+            return new LVector2(vec.x, vec.y);
+        }
+
+        public static LVector3 ToLVector3XY(this LVector2 vec, LFloat y)
+        {
+            return new LVector3(vec.x, y, LFloat.zero);
         }
 
         //为了 2d下xOy时， 可视化四叉树范围 

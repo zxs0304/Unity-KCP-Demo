@@ -32,7 +32,7 @@ namespace LockstepTutorial {
             if (type == ECollisionEvent.Enter && other.LayerType == (int) EColliderLayer.Enemy)
             {
                 Debug.Log($"Player碰撞enter ");
-                if (skillBox.curSkill?.AnimName == "sprint" && skillBox.isFiring)
+                if (skillBox.curSkill?.AnimName == "Sprint" && skillBox.isFiring)
                 {
                     other.Entity.rigidbody.AddImpulse(new LVector3(true,0,4000,0));
                 }

@@ -8,6 +8,7 @@ namespace LockstepTutorial {
         public UIFloatBar uiFloatBar;
         public Entity entity;
         protected bool isDead => entity?.isDead ?? true;
+        public SpriteRenderer sprite;
 
         public virtual void BindEntity(BaseEntity entity){
             this.entity = entity as Entity;
@@ -19,6 +20,7 @@ namespace LockstepTutorial {
             //TestRigidBody
             //transform.position = this.entity.transform.Pos3.ToVector3();
             transform.position = this.entity.transform.Pos3.ToVector3_2D();
+            sprite = GetComponent<SpriteRenderer>();
         }
 
         public virtual void OnTakeDamage(int amount, LVector3 hitPoint){
@@ -38,6 +40,10 @@ namespace LockstepTutorial {
 
 
             transform.position = Vector3.Lerp(transform.position, pos, 0.37f);
+            if (sprite != null)
+            {
+                sprite.flipX = entity.transform.forward.x < 0;
+            }
 
 
             //TEST2d

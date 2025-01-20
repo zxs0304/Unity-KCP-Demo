@@ -8,10 +8,12 @@ public class AnimatorView : MonoBehaviour, IAnimatorView {
     public Transform rootTrans;
     public AnimationState animState;
     private CAnimator cAnim;
-    private Animator anim;
+    private Animator animator;
     public LFloat speed;
-
+    public Entity entity;
     void Start(){
+        rootTrans = transform;
+        animator = GetComponent<Animator>();
         if (animComp == null) {
             animComp = GetComponent<Animation>();
             if (animComp == null) {
@@ -23,27 +25,31 @@ public class AnimatorView : MonoBehaviour, IAnimatorView {
     public virtual void BindEntity(BaseEntity entity)
     {
         UnityEngine.Debug.Log("Animator Bind");
-        var curEntity = entity as Entity;
-        cAnim = curEntity.animator;
+        this.entity = entity as Entity;
+        cAnim = this.entity.animator;
+        cAnim.view = this;
     }
 
     public void SetInteger(string name, int val){
-        anim.SetInteger(name, val);
+        animator.SetInteger(name, val);
     }
 
     public void SetTrigger(string name){
-        anim.SetTrigger(name);
+        animator.SetTrigger(name);
     }
 
     public void Play(string name, bool isCross){
-        animState = animComp[name];
-        var state = animComp[name];
-        if (state != null) {
+        //animState = animComp[name];
+        var state = animator.HasState(0,Animator.StringToHash(name));
+        if (state)
+        {
             if (isCross) {
-                animComp.CrossFade(name);
+                //animComp.CrossFade(name);
+                animator.CrossFade(name, 0, 0);
             }
             else {
-                animComp.Play(name);
+                //animComp.Play(name);
+                animator.Play(name);
             }
         }
     }

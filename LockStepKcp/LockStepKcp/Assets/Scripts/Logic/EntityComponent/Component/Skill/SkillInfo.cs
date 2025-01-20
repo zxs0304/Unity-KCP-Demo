@@ -29,7 +29,7 @@ namespace Lockstep.Logic {
         public LFloat interval;
         public int otherCount;
         public int damage;
-        public static LFloat AnimFrameScale = new LFloat(true, 1667);
+        public static LFloat AnimFrameScale = new LFloat(true, 17);
         [HideInInspector] public LFloat DeadTimer => startTimer + interval * (otherCount + LFloat.half);
 
         [HideInInspector] public int counter;

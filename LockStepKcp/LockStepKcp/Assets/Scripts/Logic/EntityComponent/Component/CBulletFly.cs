@@ -24,7 +24,7 @@ namespace LockstepTutorial
         {
             base.DoStart();
             flySpeed = bullet.moveSpd;
-            flyDir = bullet.Owner.transform.forward;
+            flyDir = bullet.transform.forward;
         }
 
         public override void DoUpdate(LFloat deltaTime)

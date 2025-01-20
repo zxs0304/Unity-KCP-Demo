@@ -78,9 +78,9 @@ namespace LockstepTutorial {
             curSkill = skill;
             isFiring = true;
             entity.isInvincible = true;
-            if (skill.SkillInfo.animName == "bullet")
+            if (skill.SkillInfo.animName == "FireBall")
             {
-                UnityEngine.Debug.Log("发射子弹");
+                UnityEngine.Debug.Log("发射火球");
                 var bullet = BulletManager.InstantiateEntity(20, entity, entity.transform.Pos3);
                 BulletManager.Instance.AddBullet(bullet as Bullet);
             }

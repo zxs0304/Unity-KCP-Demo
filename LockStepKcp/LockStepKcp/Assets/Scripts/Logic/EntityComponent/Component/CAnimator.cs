@@ -28,9 +28,10 @@ public class CAnimator : BaseComponent {
 
     private List<AnimInfo> _animInfos => config.anims;
     public override void DoStart(){
-        if(config == null) return;
+        if (config == null) return;
         _animNames.Clear();
-        foreach (var info in _animInfos) {
+        foreach (var info in _animInfos)
+        {
             _animNames.Add(info.name);
         }
 
@@ -38,19 +39,21 @@ public class CAnimator : BaseComponent {
     }
 
     public override void DoUpdate(LFloat deltaTime){
-        if(config == null) return;
+        if (config == null) return;
         _animLen = curAnimInfo.length;
         _timer += deltaTime;
-        if (_timer > _animLen) {
+        if (_timer > _animLen)
+        {
             ResetAnim();
         }
         view?.Sample(_timer);
-        
+
         var idx = GetTimeIdx(_timer);
-        if (curAnimBindInfo.isMoveByAnim) {
+        if (curAnimBindInfo.isMoveByAnim)
+        {
             var animOffset = curAnimInfo[idx].pos;
-            var pos = transform.TransformDirection(animOffset.ToLVector2XZ());
-            transform.Pos3 = (_intiPos + pos.ToLVector3XZ(animOffset.y));
+            var pos = transform.TransformDirection(animOffset.ToLVector2XY());
+            transform.Pos3 = (_intiPos + pos.ToLVector3XY(animOffset.y));
         }
     }
 
@@ -59,11 +62,12 @@ public class CAnimator : BaseComponent {
     }
 
     public void Play(string name, bool isCrossfade = false){
-        if(config == null) return;
+        if (config == null) return;
         if (_curAnimName == name)
             return;
         var idx = _animNames.IndexOf(name);
-        if (idx == -1) {
+        if (idx == -1)
+        {
             UnityEngine.Debug.LogError("miss animation " + name);
             return;
         }
@@ -74,7 +78,8 @@ public class CAnimator : BaseComponent {
         curAnimInfo = _animInfos[idx];
         curAnimBindInfo = config.events.Find((a) => a.name == name);
         if (curAnimBindInfo == null) curAnimBindInfo = AnimBindInfo.Empty;
-        if (hasChangedAnim) {
+        if (hasChangedAnim)
+        {
             //owner.TakeDamage(0, owner.transform2D.Pos3);
             ResetAnim();
         }
