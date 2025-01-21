@@ -137,7 +137,7 @@ namespace LockstepTutorial {
             }
 
             foreach (var other in _tempTargets) {
-                other.Entity.TakeDamage(_curPart.damage, other.Entity.transform.pos.ToLVector3());
+                other.Entity.TakeDamage(_curPart.damage, other.Entity.transform.pos.ToLVector3XY());
             }
 
             //add force

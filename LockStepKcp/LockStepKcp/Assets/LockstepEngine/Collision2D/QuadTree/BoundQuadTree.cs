@@ -49,9 +49,9 @@ namespace Lockstep.Collision2D {
             return new LVector2(vec.x, vec.y);
         }
 
-        public static LVector3 ToLVector3XY(this LVector2 vec, LFloat y)
+        public static LVector3 ToLVector3XY(this LVector2 vec)
         {
-            return new LVector3(vec.x, y, LFloat.zero);
+            return new LVector3(vec.x, vec.y, LFloat.zero);
         }
 
         //为了 2d下xOy时， 可视化四叉树范围 

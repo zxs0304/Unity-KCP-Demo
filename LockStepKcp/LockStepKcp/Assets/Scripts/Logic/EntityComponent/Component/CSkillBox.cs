@@ -13,7 +13,7 @@ namespace LockstepTutorial {
         public bool isFiring;
         public Skill curSkill;
         private int curSkillIdx = 0;
-
+        public bool canMove;
 #if UNITY_EDITOR
         [UnityEngine.SerializeField]
 #endif
@@ -89,6 +89,7 @@ namespace LockstepTutorial {
         public void OnSkillDone(Skill skill){
             Debug.Log("OnSkillDone " + skill.SkillInfo.animName);
             curSkill = null;
+            curSkillIdx = -1;
             isFiring = false;
             entity.isInvincible = false;
         }

@@ -19,9 +19,10 @@ namespace LockstepTutorial {
 
         Vector3 offset; // The initial offset from the target.
 
-
-        void FixedUpdate(){
-            if (_target == null) {
+        private void LateUpdate()
+        {
+            if (_target == null)
+            {
                 target = GameManager.MyPlayerTrans;
             }
 
@@ -31,6 +32,9 @@ namespace LockstepTutorial {
 
             // Smoothly interpolate between the camera's current position and it's target position.
             transform.position = Vector3.Lerp(transform.position, targetCamPos, 0.1f);
+        }
+        void FixedUpdate(){
+
         }
     }
 }

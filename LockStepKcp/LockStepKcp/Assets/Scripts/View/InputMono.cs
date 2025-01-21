@@ -16,7 +16,7 @@ namespace LockstepTutorial {
         public LVector2 inputUV;
         public bool isInputFire;
         public int skillId;
-        public bool isSpeedUp;
+        public bool isJump;
 
         void Start(){
             floorMask = LayerMask.GetMask("Floor");
@@ -45,14 +45,14 @@ namespace LockstepTutorial {
                     }
                 }
 
-                isSpeedUp = Input.GetKeyDown(KeyCode.Space);
-                GameManager.Instance.isJumps.Add(isSpeedUp);
+                isJump = Input.GetKeyDown(KeyCode.Space);
+                GameManager.Instance.isJumps.Add(isJump);
                 GameManager.CurGameInput =  new PlayerInput() {
                     mousePos = mousePos,
                     inputUV = inputUV,
                     isInputFire = isInputFire,
                     skillId = skillId,
-                    isSpeedUp = isSpeedUp,
+                    isJump = isJump,
                 };
                 
             }

@@ -81,7 +81,7 @@ namespace LockstepTutorial {
     public class BulletConfig : EntityConfig
     {
         public override object Entity => entity;
-        public Bullet entity = new Bullet(null);
+        public Bullet entity = new Bullet();
     }
 
     [CreateAssetMenu(menuName = "GameConfig")]

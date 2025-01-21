@@ -1,11 +1,12 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Lockstep;
 using Lockstep.Collision2D;
 using Lockstep.Logic;
 using Lockstep.Math;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+
 
 namespace LockstepTutorial {
     [Serializable]
@@ -13,23 +14,44 @@ namespace LockstepTutorial {
         public int localId;
         public PlayerInput input = new PlayerInput();
         public CMover mover = new CMover();
-
+        public bool isHurting = false;
+        public LFloat hurtTime = new LFloat(true,150);
+        public LFloat hurtTimer = 0;
+        public Action OnEndHurt;
         public Player(){
             RegisterComponent(mover);
             OnTriggerEvent = OnCollision;
         }
 
         public override void DoUpdate(LFloat deltaTime){
+
+            if (isHurting)
+            {
+                hurtTimer += deltaTime;
+                if (hurtTimer >= hurtTime)
+                {
+                    isHurting = false;
+                    hurtTimer = 0;
+                    OnEndHurt();
+                }
+                else
+                {
+                    return;
+                }
+            }
+
             base.DoUpdate(deltaTime);
             if (input.skillId != -1) {
                 Fire(input.skillId);
             }
+
+
         }
 
         public void OnCollision(ColliderProxy other, ECollisionEvent type)
         {
           
-            if (type == ECollisionEvent.Enter && other.LayerType == (int) EColliderLayer.Enemy)
+            if (type == ECollisionEvent.Enter )
             {
                 Debug.Log($"Player碰撞enter ");
                 if (skillBox.curSkill?.AnimName == "Sprint" && skillBox.isFiring)
@@ -40,16 +62,22 @@ namespace LockstepTutorial {
             if (type == ECollisionEvent.Stay && other.LayerType == (int)EColliderLayer.Enemy)
             {
                 Debug.Log($"Player碰撞stay");
-                //if (skillBox.curSkill?.AnimName == "sprint" && skillBox.isFiring)
-                //{
-                //    other.Entity.rigidbody.AddImpulse(new LVector3(true, transform.forward.x * 4000, 6000, 0));
-                //}
+
             }
             if (type == ECollisionEvent.Exit && other.LayerType == (int)EColliderLayer.Enemy)
             {
                 Debug.Log($"player碰撞exit ");
             }
 
+        }
+
+        protected override void OnTakeDamage(int amount, LVector3 hitPoint)
+        {
+            base.OnTakeDamage(amount, hitPoint);
+            GameManager.Instance.HitPause(10);
+            GameManager.Instance.CameraShake(0.1f, 0.1f);
+            isHurting = true;
+            hurtTimer = 0;
         }
 
     }

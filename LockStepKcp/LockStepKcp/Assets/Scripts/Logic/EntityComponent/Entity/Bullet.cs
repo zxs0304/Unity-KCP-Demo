@@ -11,6 +11,12 @@ namespace LockstepTutorial
         public Entity Owner { get; private set; }//创建者
         public CBulletFly Cfly = new CBulletFly();
 
+        // 用于config构造
+        public Bullet()
+        {
+            RegisterComponent(Cfly);
+        }
+
         public Bullet(Entity owner)
         {
             this.Owner = owner;

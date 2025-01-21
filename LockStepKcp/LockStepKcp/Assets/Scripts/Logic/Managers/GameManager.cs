@@ -206,7 +206,7 @@ namespace LockstepTutorial {
                 {
                     if (isjump)
                     {
-                        CurGameInput.isSpeedUp = true;
+                        CurGameInput.isJump = true;
                     }
                 }
                 isJumps.Clear();
@@ -225,11 +225,11 @@ namespace LockstepTutorial {
 
             var playerInput = CurGameInput;
 
-            foreach (var item in isJumps)
+            foreach (var isJump in isJumps)
             {
-                if (item)
+                if (isJump)
                 {
-                    playerInput.isSpeedUp = true;
+                    playerInput.isJump = true;
                 }
             }
             isJumps.Clear();
@@ -389,6 +389,48 @@ namespace LockstepTutorial {
             }
 
             return hash;
+        }
+
+        public void HitPause(int duration)
+        {
+            StartCoroutine(Pause(duration));
+        }
+
+        //暂停协程
+        IEnumerator Pause(int duration)
+        {
+            //以一秒60帧计算
+            float pauseTime = duration / 60f;
+            Time.timeScale = 0;
+            yield return new UnityEngine.WaitForSecondsRealtime(pauseTime);
+            Time.timeScale = 1;
+        }
+
+
+
+        private bool isShake;
+        public void CameraShake(float duration, float strength)
+        {
+            if (!isShake)
+                StartCoroutine(Shake(duration, strength));
+        }
+
+        //相机震动协程
+        IEnumerator Shake(float duration, float strength)
+        {
+            isShake = true;
+            //获取到主摄像机的Transform信息
+            Transform camera = Camera.main.transform;
+            Vector3 startPosition = camera.position;
+
+            while (duration > 0)
+            {
+                camera.position = UnityEngine.Random.insideUnitSphere * strength + startPosition;
+                duration -= Time.deltaTime;
+                yield return null;
+            }
+            camera.position = startPosition;
+            isShake = false;
         }
     }
 }

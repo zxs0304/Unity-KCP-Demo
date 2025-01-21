@@ -53,7 +53,7 @@ public class CAnimator : BaseComponent {
         {
             var animOffset = curAnimInfo[idx].pos;
             var pos = transform.TransformDirection(animOffset.ToLVector2XY());
-            transform.Pos3 = (_intiPos + pos.ToLVector3XY(animOffset.y));
+            transform.Pos3 = (_intiPos + pos.ToLVector3XY());
         }
     }
 
@@ -62,35 +62,40 @@ public class CAnimator : BaseComponent {
     }
 
     public void Play(string name, bool isCrossfade = false){
-        if (config == null) return;
-        if (_curAnimName == name)
-            return;
-        var idx = _animNames.IndexOf(name);
-        if (idx == -1)
-        {
-            UnityEngine.Debug.LogError("miss animation " + name);
-            return;
-        }
+        //if (config == null) return;
+        //if (_curAnimName == name)
+        //    return;
+        //var idx = _animNames.IndexOf(name);
+        //if (idx == -1)
+        //{
+        //    UnityEngine.Debug.LogError("miss animation " + name);
+        //    return;
+        //}
 
-        Debug.Trace($"{baseEntity.EntityId} PlayAnim {name} rawName {_curAnimName}");
-        var hasChangedAnim = _curAnimName != name;
-        _curAnimName = name;
-        curAnimInfo = _animInfos[idx];
-        curAnimBindInfo = config.events.Find((a) => a.name == name);
-        if (curAnimBindInfo == null) curAnimBindInfo = AnimBindInfo.Empty;
-        if (hasChangedAnim)
-        {
-            //owner.TakeDamage(0, owner.transform2D.Pos3);
-            ResetAnim();
-        }
+        //Debug.Trace($"{baseEntity.EntityId} PlayAnim {name} rawName {_curAnimName}");
+        //var hasChangedAnim = _curAnimName != name;
+        //_curAnimName = name;
+        //curAnimInfo = _animInfos[idx];
+        //curAnimBindInfo = config.events.Find((a) => a.name == name);
+        //if (curAnimBindInfo == null) curAnimBindInfo = AnimBindInfo.Empty;
+        //if (hasChangedAnim)
+        //{
+        //    //owner.TakeDamage(0, owner.transform2D.Pos3);
+        //    ResetAnim();
+        //}
 
-        view?.Play(_curAnimName, isCrossfade);
+        //view?.Play(_curAnimName, isCrossfade);
     }
 
     public void SetTime(LFloat timer){
         if(config == null) return;
         var idx = GetTimeIdx(timer);
-        _intiPos = transform.Pos3 - curAnimInfo[idx].pos;
+
+        if (idx > 0)
+        {
+            _intiPos = transform.Pos3 - curAnimInfo[idx].pos;
+        }
+
         Debug.Trace(
             $"{baseEntity.EntityId} SetTime  idx:{idx} intiPos {baseEntity.transform.Pos3}",
             true);

@@ -49,7 +49,9 @@ namespace LockstepTutorial {
                 CollisionManager.Instance.RemoveCollider(this);
             }
         }
-        protected virtual void OnTakeDamage(int amount, LVector3 hitPoint){ }
+        protected virtual void OnTakeDamage(int amount, LVector3 hitPoint)
+        {
+        }
 
         protected virtual void OnDead(){
             Debug.Log($"{EntityId} Dead");

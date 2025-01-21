@@ -5,7 +5,7 @@ using Lockstep.Math;
 
 namespace Lockstep.Logic {
     public delegate void OnFloorResultCallback(bool isOnFloor);
-
+    public delegate void OnLandEvent();
     [Serializable]
     public class CRigidbody {
         public CTransform2D transform { get; private set; }
@@ -16,12 +16,14 @@ namespace Lockstep.Logic {
         public static LFloat FloorY = LFloat.zero;
         
         public OnFloorResultCallback OnFloorEvent;
-        
+        public OnLandEvent OnLandEvent;
+
         public LVector3 Speed;
         public LFloat Mass = LFloat.one;
         public bool isEnable = true;
         public bool isSleep = false;
         public bool isOnFloor;
+        public bool lastFrameOnFloor; //上一帧是否在地面上
 
         public void Init(CTransform2D transform2D){
             this.transform = transform2D;
@@ -76,6 +78,14 @@ namespace Lockstep.Logic {
                         isSleep = true;
                     }
                 }
+
+
+                if (isOnFloor && !lastFrameOnFloor)
+                {
+                    UnityEngine.Debug.Log("落地");
+                    OnLandEvent?.Invoke();
+                }
+                lastFrameOnFloor = isOnFloor;
 
                 transform.Pos3 = pos;
             }

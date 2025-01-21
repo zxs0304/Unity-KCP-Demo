@@ -9,6 +9,7 @@ namespace LockstepTutorial {
         public Entity entity;
         protected bool isDead => entity?.isDead ?? true;
         public SpriteRenderer sprite;
+        public Animator animator;
 
         public virtual void BindEntity(BaseEntity entity){
             this.entity = entity as Entity;
@@ -21,6 +22,7 @@ namespace LockstepTutorial {
             //transform.position = this.entity.transform.Pos3.ToVector3();
             transform.position = this.entity.transform.Pos3.ToVector3_2D();
             sprite = GetComponent<SpriteRenderer>();
+            animator = GetComponent<Animator>();
         }
 
         public virtual void OnTakeDamage(int amount, LVector3 hitPoint){
@@ -33,22 +35,16 @@ namespace LockstepTutorial {
             GameObject.Destroy(gameObject);
         }
 
-        private void Update(){
-            //TestR
-            //var pos = entity.transform.Pos3.ToVector3();
+        public virtual void Update(){
+
             var pos = entity.transform.Pos3.ToVector3_2D();
-
-
             transform.position = Vector3.Lerp(transform.position, pos, 0.37f);
+
             if (sprite != null)
             {
                 sprite.flipX = entity.transform.forward.x < 0;
             }
 
-
-            //TEST2d
-            //var deg = entity.transform.deg.ToFloat();
-            //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, deg, 0), 0.3f);
         }
 
         private void OnDrawGizmos(){

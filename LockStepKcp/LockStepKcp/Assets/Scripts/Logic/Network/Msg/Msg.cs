@@ -64,14 +64,14 @@ namespace Lockstep.Logic {
         public LVector2 inputUV;
         public bool isInputFire;
         public int skillId;
-        public bool isSpeedUp;
+        public bool isJump;
 
         public override void Serialize(Serializer writer){
             writer.Write(mousePos);
             writer.Write(inputUV);
             writer.Write(isInputFire);
             writer.Write(skillId);
-            writer.Write(isSpeedUp);
+            writer.Write(isJump);
         }
 
         public override void Deserialize(Deserializer reader){
@@ -79,7 +79,7 @@ namespace Lockstep.Logic {
             inputUV = reader.ReadLVector2();
             isInputFire = reader.ReadBoolean();
             skillId = reader.ReadInt32();
-            isSpeedUp = reader.ReadBoolean();
+            isJump = reader.ReadBoolean();
         }
 
         public PlayerInput Clone(){
@@ -89,7 +89,7 @@ namespace Lockstep.Logic {
                 inputUV = tThis.inputUV,
                 isInputFire = tThis.isInputFire,
                 skillId = tThis.skillId,
-                isSpeedUp = tThis.isSpeedUp,
+                isJump = tThis.isJump,
             };
         }
     }
