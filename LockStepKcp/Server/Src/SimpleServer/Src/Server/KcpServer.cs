@@ -134,6 +134,9 @@ namespace Lockstep.FakeServer
             _id2Player.Remove(player.Id);
             _name2Player.Remove(player.name);
             _id2KcpProxy.Remove(player.Id);
+
+            kCPNetworkProxy.m_Socket.RemoveKcpProxy(kcpProxy);
+
             _curCount--;
             if (_curCount == 0)
             {

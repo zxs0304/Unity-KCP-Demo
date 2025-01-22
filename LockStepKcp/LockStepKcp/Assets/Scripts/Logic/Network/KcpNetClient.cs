@@ -8,7 +8,6 @@ namespace Lockstep.Logic
 {
     public class KcpNetClient : IKcpMessageDispatcher
     {
-        public static IPEndPoint serverIpPoint = NetworkUtil.ToIPEndPoint("127.0.0.1", 12345);
         private KCPNetworkProxy kcpNetworkProxy = new KCPNetworkProxy();
 
 

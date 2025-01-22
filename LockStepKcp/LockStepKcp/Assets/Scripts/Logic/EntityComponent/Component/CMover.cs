@@ -23,7 +23,7 @@ namespace LockstepTutorial {
         {
 
             needMove = input.inputUV.sqrMagnitude > new LFloat(true, 10);
-            if (needMove && !player.skillBox.isFiring)
+            if (needMove && player.skillBox.canMove)
             {
                 LVector2 dir = new LVector2(input.inputUV.x,LFloat.zero);
                 transform.pos = transform.pos + dir * speed * deltaTime;

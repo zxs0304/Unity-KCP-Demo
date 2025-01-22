@@ -5,8 +5,8 @@ using Lockstep.Network;
 
 namespace Lockstep.FakeServer{
     public class ServerLauncher {
-        private static Server server;
-        //private static KcpServer server;
+        //private static Server server;
+        private static KcpServer server;
         public static void Main(){
             //let async functions call in this thread  
             OneThreadSynchronizationContext contex = new OneThreadSynchronizationContext();
@@ -16,7 +16,7 @@ namespace Lockstep.FakeServer{
                 DoAwake();
                 while (true) {
                     try {
-                        //Thread.Sleep(3);
+                        Thread.Sleep(3);
                         contex.Update();
 
                         server.Update();

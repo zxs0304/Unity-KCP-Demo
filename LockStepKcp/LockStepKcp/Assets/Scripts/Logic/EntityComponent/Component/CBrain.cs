@@ -60,7 +60,7 @@ namespace LockstepTutorial {
                 if (atkTimer <= 0) {
                     atkTimer = atkInterval;
                     //Atk
-                    target.TakeDamage(entity.damage, target.transform.Pos3);
+                    target.TakeDamage(entity.damage, target.transform.Pos3,true);
                 }
             }
         }

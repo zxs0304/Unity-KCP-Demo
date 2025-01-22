@@ -84,7 +84,7 @@ namespace SGF.Network.KCP
         private byte[] m_RecvBufferTemp = new byte[8196];
 
         //KCP参数
-        private List<KCPProxy> m_ListKcp; 
+        public List<KCPProxy> m_ListKcp; 
         private uint m_KcpKey = 0;
         private KCPReceiveListener m_AnyEPListener;
 
@@ -170,6 +170,23 @@ namespace SGF.Network.KCP
             }
         }
 
+        public void RemoveKcpProxy(IPEndPoint iPEndPoint)
+        {
+            var kcpProxy = m_ListKcp.Find((kcpProxy) => kcpProxy.RemotePoint == iPEndPoint );
+            if (kcpProxy != null)
+            {
+                m_ListKcp.Remove(kcpProxy);
+                kcpProxy.Dispose();
+            }
+        }
+        public void RemoveKcpProxy(KCPProxy proxy)
+        {
+            if (proxy != null)
+            {
+                m_ListKcp.Remove(proxy);
+                proxy.Dispose();
+            }
+        }
 
         public int LocalPort
         {
@@ -287,8 +304,18 @@ namespace SGF.Network.KCP
                 for (int i = 0; i < cnt; i++)
                 {
                     KCPProxy proxy = m_ListKcp[i];
-                    proxy.Update(current);
+                    if (proxy != null)
+                    {
+                        proxy.Update(current);
+
+                    }
+                    else
+                    {
+                        Console.WriteLine($"报错,count：{m_ListKcp.Count}");
+                    }
                 }
+
+ 
             }
         }
 

@@ -12,12 +12,7 @@ using Lockstep.Serialization;
 using Lockstep.Util;
 using UnityEngine;
 using Debug = Lockstep.Logging.Debug;
-using Profiler = Lockstep.Util.Profiler;
-using System.Net.Sockets;
-using Lockstep.Network;
-using System.Text;
-using UnityEditor.VersionControl;
-using System.Net;
+
 
 namespace LockstepTutorial {
     public class GameManager : UnityBaseManager {
@@ -52,8 +47,8 @@ namespace LockstepTutorial {
         public static Player MyPlayer;
         public static Transform MyPlayerTrans;
         [HideInInspector] public float remainTime; // remain time to update
-        private NetClient netClient;
-        //private KcpNetClient netClient;
+        //private NetClient netClient;
+        private KcpNetClient netClient;
         private List<UnityBaseManager> _mgrs = new List<UnityBaseManager>();
         public List<bool> isJumps = new();
 
@@ -74,7 +69,8 @@ namespace LockstepTutorial {
         }
 
         private void Awake(){
-            Screen.SetResolution(1024, 768, false);
+            Screen.SetResolution(960, 540, false);
+
             gameObject.AddComponent<PingMono>();
             gameObject.AddComponent<InputMono>();
             EnemyManager.maxCount = MaxEnemyCount;
@@ -115,8 +111,7 @@ namespace LockstepTutorial {
 
             Debug.Trace("Before StartGame _IdCounter" + BaseEntity.IdCounter);
             if (!IsReplay && !IsClientMode) {
-                netClient = new NetClient();
-                //netClient = new KcpNetClient();
+                netClient = new ();
 
                 netClient.Start();
                 netClient.Send(new Msg_JoinRoom() {name = Application.dataPath});
@@ -260,7 +255,7 @@ namespace LockstepTutorial {
                     hash = GetHash()
                 });
 
-                //UnityEngine.Debug.Log($"tick:{curFrameIdx} , hash{localPlayerId}, {GetHash()}");
+                //UnityEngine.Debug.LogWarning($"tick:{curFrameIdx} , hash{localPlayerId}, {GetHash()}");
 
                 TraceHelper.TraceFrameState();
                 curFrameIdx++;

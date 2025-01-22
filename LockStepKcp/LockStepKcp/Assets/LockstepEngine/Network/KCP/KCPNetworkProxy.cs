@@ -8,7 +8,7 @@ namespace Lockstep.Network
 {
     public class KCPNetworkProxy : NetBase
     {
-        public static IPEndPoint serverIpPoint = NetworkUtil.ToIPEndPoint("127.0.0.1", 12345);
+        public static IPEndPoint serverIpPoint = NetworkUtil.ToIPEndPoint("172.16.11.189", 12345);
         public IMessagePacker MessagePacker { get; set; }
         public IKcpMessageDispatcher MessageDispatcher { get; set; }
         public KCPSocket m_Socket;

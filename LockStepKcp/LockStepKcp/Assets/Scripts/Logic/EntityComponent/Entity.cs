@@ -38,18 +38,19 @@ namespace LockstepTutorial {
             skillBox.ForceStop(idx);
         }
 
-        public virtual void TakeDamage(int amount, LVector3 hitPoint){
+        public virtual void TakeDamage(int amount, LVector3 hitPoint,bool pauseFrame)
+        {
             if (isInvincible || isDead) return;
             curHealth -= amount;
             EntityView?.OnTakeDamage(amount, hitPoint);
-            OnTakeDamage(amount, hitPoint);
+            OnTakeDamage(amount, hitPoint, pauseFrame);
             if (isDead) {
                 EntityView?.OnDead();
                 OnDead();
                 CollisionManager.Instance.RemoveCollider(this);
             }
         }
-        protected virtual void OnTakeDamage(int amount, LVector3 hitPoint)
+        protected virtual void OnTakeDamage(int amount, LVector3 hitPoint,bool pauseFrame)
         {
         }
 

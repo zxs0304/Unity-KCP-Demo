@@ -1,5 +1,6 @@
 ﻿using System;
 using Lockstep.Collision2D;
+using Lockstep.Game;
 using Lockstep.Logic;
 using Lockstep.Math;
 using UnityEngine;
@@ -50,8 +51,13 @@ namespace LockstepTutorial
         {
             if (type == ECollisionEvent.Enter)
             {
-                other.Entity.TakeDamage(damage,other.Entity.transform.Pos3);
-                other.Entity.rigidbody.AddImpulse(new LVector3(1,3,0) * Cfly.flyDir);
+                if (other.Entity == Owner)
+                {
+                    return;
+                }
+
+                other.Entity.TakeDamage(damage, other.Entity.transform.Pos3, true);
+                other.Entity.rigidbody.AddImpulse(new LVector3(1, 3, 0) * Cfly.flyDir);
                 Debug.Log($"bullet碰撞enter ");
             }
             if (type == ECollisionEvent.Stay )

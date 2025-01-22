@@ -9,7 +9,7 @@ namespace Lockstep.Logic {
     [Serializable]
     public class CRigidbody {
         public CTransform2D transform { get; private set; }
-        public static LFloat G = new LFloat(10);
+        public static LFloat G = new LFloat(12);
         public static LFloat MinSleepSpeed = new LFloat(true, 100);
         public static LFloat FloorFriction = new LFloat(20);
         public static LFloat MinYSpd = new LFloat(-10);

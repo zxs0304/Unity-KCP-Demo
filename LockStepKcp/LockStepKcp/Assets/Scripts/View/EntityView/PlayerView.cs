@@ -1,6 +1,8 @@
+using System.Collections;
 using Lockstep.Logic;
 using Lockstep.Math;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 namespace LockstepTutorial {
@@ -13,16 +15,13 @@ namespace LockstepTutorial {
             player = entity as Player;
             player.rigidbody.OnLandEvent += PlayerOnLand;
             player.OnEndHurt += PlayerOnEndHurt;
+            player.OnStartHurt += PlayerOnStartHurt;
         }
 
         public override void Update()
         {
             base.Update();
 
-            if (player.isHurting)
-            {
-                animator.Play("Hurt");
-            }
             animator.SetBool("Walking", player.mover.needMove);
             animator.SetBool("OnFloor", player.rigidbody.isOnFloor);
 
@@ -57,6 +56,22 @@ namespace LockstepTutorial {
         public void PlayerOnEndHurt()
         {
             animator.Play("Idle");
+        }
+        public void PlayerOnStartHurt()
+        {
+            animator.Play("Hurt");
+            StartCoroutine(PlayerOnStartHurtReally()) ;
+        }
+
+        IEnumerator PlayerOnStartHurtReally()
+        {
+            var render = GetComponent<SpriteRenderer>();
+
+            render.material.color = Color.red;
+
+            yield return new WaitForSecondsRealtime(0.15f);
+
+            render.material.color = Color.white;
         }
 
     }

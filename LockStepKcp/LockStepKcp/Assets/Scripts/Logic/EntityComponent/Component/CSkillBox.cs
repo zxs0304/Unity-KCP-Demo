@@ -13,7 +13,7 @@ namespace LockstepTutorial {
         public bool isFiring;
         public Skill curSkill;
         private int curSkillIdx = 0;
-        public bool canMove;
+        public bool canMove = true;
 #if UNITY_EDITOR
         [UnityEngine.SerializeField]
 #endif
@@ -46,7 +46,12 @@ namespace LockstepTutorial {
 
             //Debug.Log("TryFire " + idx);
 
-            if (isFiring) return false; //
+            if (isFiring)
+            {
+                UnityEngine.Debug.Log("已经在技能了 " + curSkill.AnimName);
+                return false; //
+            }
+
             var skill = skills[idx];
             if (skill.Fire()) {
                 curSkillIdx = idx;
@@ -77,13 +82,8 @@ namespace LockstepTutorial {
             Debug.Log("OnSkillStart " + skill.SkillInfo.animName);
             curSkill = skill;
             isFiring = true;
-            entity.isInvincible = true;
-            if (skill.SkillInfo.animName == "FireBall")
-            {
-                UnityEngine.Debug.Log("发射火球");
-                var bullet = BulletManager.InstantiateEntity(20, entity, entity.transform.Pos3);
-                BulletManager.Instance.AddBullet(bullet as Bullet);
-            }
+            entity.isInvincible = false;
+            canMove = skill.SkillInfo.canMove;
         }
 
         public void OnSkillDone(Skill skill){
@@ -92,10 +92,17 @@ namespace LockstepTutorial {
             curSkillIdx = -1;
             isFiring = false;
             entity.isInvincible = false;
+            canMove = true;
         }
 
         public void OnSkillPartStart(Skill skill){
-            //Debug.Log("OnSkillPartStart " + skill.SkillInfo.animName );
+            Debug.Log("OnSkillPartStart " + skill.SkillInfo.animName);
+            if (skill.SkillInfo.animName == "FireBall")
+            {
+                UnityEngine.Debug.Log("发射火球");
+                var bullet = BulletManager.InstantiateEntity(20, entity, entity.transform.Pos3);
+                BulletManager.Instance.AddBullet(bullet as Bullet);
+            }
         }
 
         public void OnDrawGizmos(){

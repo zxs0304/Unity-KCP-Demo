@@ -46,6 +46,7 @@ namespace Lockstep.Logic {
         public LFloat doneDelay;
         public int targetLayer;
         public LFloat maxPartTime;
+        public bool canMove;
         public List<SkillPart> parts = new List<SkillPart>();
 
         public void DoInit(){

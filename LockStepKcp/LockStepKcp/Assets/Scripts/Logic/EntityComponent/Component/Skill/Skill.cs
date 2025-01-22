@@ -137,7 +137,7 @@ namespace LockstepTutorial {
             }
 
             foreach (var other in _tempTargets) {
-                other.Entity.TakeDamage(_curPart.damage, other.Entity.transform.pos.ToLVector3XY());
+                other.Entity.TakeDamage(_curPart.damage, other.Entity.transform.pos.ToLVector3XY(),true);
             }
 
             //add force
@@ -161,6 +161,10 @@ namespace LockstepTutorial {
 
 
         private void _OnTriggerEnter(ColliderProxy other){
+            if (other.Entity == entity)
+            {
+                return;
+            }
             if (_curPart.collider.IsCircle && _curPart.collider.deg > 0) {
                 var deg = (other.Transform2D.pos - entity.transform.pos).ToDeg();
                 var playerDeg = entity.transform.deg;

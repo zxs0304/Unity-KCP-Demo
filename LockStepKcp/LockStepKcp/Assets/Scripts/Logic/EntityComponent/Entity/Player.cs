@@ -18,6 +18,8 @@ namespace LockstepTutorial {
         public LFloat hurtTime = new LFloat(true,150);
         public LFloat hurtTimer = 0;
         public Action OnEndHurt;
+        public Action OnStartHurt;
+
         public Player(){
             RegisterComponent(mover);
             OnTriggerEvent = OnCollision;
@@ -56,7 +58,8 @@ namespace LockstepTutorial {
                 Debug.Log($"Player碰撞enter ");
                 if (skillBox.curSkill?.AnimName == "Sprint" && skillBox.isFiring)
                 {
-                    other.Entity.rigidbody.AddImpulse(new LVector3(true,0,4000,0));
+                    other.Entity.TakeDamage(2,transform.Pos3,false);
+                    other.Entity.rigidbody.AddImpulse(new LVector3(true,0,5000,0));
                 }
             }
             if (type == ECollisionEvent.Stay && other.LayerType == (int)EColliderLayer.Enemy)
@@ -71,11 +74,18 @@ namespace LockstepTutorial {
 
         }
 
-        protected override void OnTakeDamage(int amount, LVector3 hitPoint)
+        protected override void OnTakeDamage(int amount, LVector3 hitPoint,bool pauseFrame)
         {
-            base.OnTakeDamage(amount, hitPoint);
-            GameManager.Instance.HitPause(10);
-            GameManager.Instance.CameraShake(0.1f, 0.1f);
+            base.OnTakeDamage(amount, hitPoint, pauseFrame);
+
+            if (pauseFrame)
+            {
+                OnStartHurt?.Invoke();
+                GameManager.Instance.HitPause(7);
+                GameManager.Instance.CameraShake(0.1f, 0.1f);
+            }
+
+
             isHurting = true;
             hurtTimer = 0;
         }
