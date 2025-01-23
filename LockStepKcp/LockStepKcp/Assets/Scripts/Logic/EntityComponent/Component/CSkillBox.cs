@@ -84,6 +84,8 @@ namespace LockstepTutorial {
             isFiring = true;
             entity.isInvincible = false;
             canMove = skill.SkillInfo.canMove;
+
+            (entity as Player).OnStartSkill(skill.SkillInfo.animName);
         }
 
         public void OnSkillDone(Skill skill){

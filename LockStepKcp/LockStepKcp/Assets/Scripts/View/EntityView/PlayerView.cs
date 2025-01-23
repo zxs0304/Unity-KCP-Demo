@@ -16,6 +16,7 @@ namespace LockstepTutorial {
             player.rigidbody.OnLandEvent += PlayerOnLand;
             player.OnEndHurt += PlayerOnEndHurt;
             player.OnStartHurt += PlayerOnStartHurt;
+            player.OnStartSkill += PlayerOnStartSkill;
         }
 
         public override void Update()
@@ -29,24 +30,14 @@ namespace LockstepTutorial {
             {
                 animator.Play("Jump");
             }
-            if (player.input.skillId != -1)
-            {
-                switch (player.input.skillId)
-                {
-                    case 0:
-                        animator.Play("Attack");
-                        break;
-                    case 1:
-                        animator.Play("Sprint");
-                        break;
-                    case 2:
-                        animator.Play("FireBall");
-                        break;
-                }
-            }
 
 
 
+        }
+
+        public void PlayerOnStartSkill(string skillName)
+        {
+            animator.Play(skillName);
         }
 
         public void PlayerOnLand()

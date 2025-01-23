@@ -417,7 +417,6 @@ namespace LockstepTutorial {
             //获取到主摄像机的Transform信息
             Transform camera = Camera.main.transform;
             Vector3 startPosition = camera.position;
-
             while (duration > 0)
             {
                 camera.position = UnityEngine.Random.insideUnitSphere * strength + startPosition;

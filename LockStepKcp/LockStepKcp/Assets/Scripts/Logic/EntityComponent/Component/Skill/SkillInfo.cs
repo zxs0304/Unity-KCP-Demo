@@ -29,6 +29,8 @@ namespace Lockstep.Logic {
         public LFloat interval;
         public int otherCount;
         public int damage;
+        public bool needSummon;
+
         public static LFloat AnimFrameScale = new LFloat(true, 17);
         [HideInInspector] public LFloat DeadTimer => startTimer + interval * (otherCount + LFloat.half);
 
@@ -47,6 +49,7 @@ namespace Lockstep.Logic {
         public int targetLayer;
         public LFloat maxPartTime;
         public bool canMove;
+
         public List<SkillPart> parts = new List<SkillPart>();
 
         public void DoInit(){

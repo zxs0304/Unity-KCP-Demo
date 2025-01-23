@@ -17,8 +17,10 @@ namespace LockstepTutorial {
         public bool isHurting = false;
         public LFloat hurtTime = new LFloat(true,150);
         public LFloat hurtTimer = 0;
+
         public Action OnEndHurt;
         public Action OnStartHurt;
+        public Action<string> OnStartSkill;
 
         public Player(){
             RegisterComponent(mover);
@@ -53,7 +55,7 @@ namespace LockstepTutorial {
         public void OnCollision(ColliderProxy other, ECollisionEvent type)
         {
           
-            if (type == ECollisionEvent.Enter )
+            if (type == ECollisionEvent.Enter)
             {
                 Debug.Log($"Player碰撞enter ");
                 if (skillBox.curSkill?.AnimName == "Sprint" && skillBox.isFiring)
@@ -62,12 +64,12 @@ namespace LockstepTutorial {
                     other.Entity.rigidbody.AddImpulse(new LVector3(true,0,5000,0));
                 }
             }
-            if (type == ECollisionEvent.Stay && other.LayerType == (int)EColliderLayer.Enemy)
+            if (type == ECollisionEvent.Stay)
             {
                 Debug.Log($"Player碰撞stay");
 
             }
-            if (type == ECollisionEvent.Exit && other.LayerType == (int)EColliderLayer.Enemy)
+            if (type == ECollisionEvent.Exit)
             {
                 Debug.Log($"player碰撞exit ");
             }
