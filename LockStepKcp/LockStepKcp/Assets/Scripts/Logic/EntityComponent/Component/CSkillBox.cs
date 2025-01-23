@@ -97,11 +97,11 @@ namespace LockstepTutorial {
             canMove = true;
         }
 
-        public void OnSkillPartStart(Skill skill){
-            Debug.Log("OnSkillPartStart " + skill.SkillInfo.animName);
-            if (skill.SkillInfo.animName == "FireBall")
+        public void OnSkillPartStart(SkillPart skillPart){
+            Debug.Log("OnSkillPartStart " + skillPart);
+            if (skillPart.summonBullet)
             {
-                UnityEngine.Debug.Log("发射火球");
+                UnityEngine.Debug.Log("召唤子弹" + skillPart.bulletPrefabId);
                 var bullet = BulletManager.InstantiateEntity(20, entity, entity.transform.Pos3);
                 BulletManager.Instance.AddBullet(bullet as Bullet);
             }

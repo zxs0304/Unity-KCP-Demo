@@ -17,7 +17,7 @@ namespace LockstepTutorial {
     public interface ISkillEventHandler {
         void OnSkillStart(Skill skill);
         void OnSkillDone(Skill skill);
-        void OnSkillPartStart(Skill skill);
+        void OnSkillPartStart(SkillPart skill);
     }
 
     [Serializable]
@@ -117,7 +117,7 @@ namespace LockstepTutorial {
         }
 
         void TriggerPart(SkillPart part){
-            eventHandler.OnSkillPartStart(this);
+            eventHandler.OnSkillPartStart(part);
             _curPart = part;
 #if DEBUG_SKILL
             _showTimer = Time.realtimeSinceStartup + 0.1f;

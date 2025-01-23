@@ -29,7 +29,8 @@ namespace Lockstep.Logic {
         public LFloat interval;
         public int otherCount;
         public int damage;
-        public bool needSummon;
+        public bool summonBullet;
+        public int bulletPrefabId;
 
         public static LFloat AnimFrameScale = new LFloat(true, 17);
         [HideInInspector] public LFloat DeadTimer => startTimer + interval * (otherCount + LFloat.half);

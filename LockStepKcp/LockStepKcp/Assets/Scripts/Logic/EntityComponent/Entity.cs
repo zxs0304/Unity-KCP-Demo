@@ -18,7 +18,7 @@ namespace LockstepTutorial {
         public bool isInvincible;
         public bool isFire;
 
-        public bool isDead => curHealth <= 0;
+        public bool isDead;
 
         public Entity(){
             RegisterComponent(animator);
@@ -44,7 +44,8 @@ namespace LockstepTutorial {
             curHealth -= amount;
             EntityView?.OnTakeDamage(amount, hitPoint);
             OnTakeDamage(amount, hitPoint, pauseFrame);
-            if (isDead) {
+            if (curHealth <= 0) {
+                isDead = true;
                 EntityView?.OnDead();
                 OnDead();
                 CollisionManager.Instance.RemoveCollider(this);

@@ -9,6 +9,7 @@ namespace LockstepTutorial
     [Serializable]
     public class Bullet : Entity
     {
+        public float aliveTime;
         public Entity Owner { get; private set; }//创建者
         public CBulletFly Cfly = new CBulletFly();
 
@@ -33,17 +34,23 @@ namespace LockstepTutorial
         public override void DoUpdate(LFloat deltaTime)
         {
             base.DoUpdate(deltaTime);
-            if (transform.pos.x.Abs() > 80)
+            if (TryDead())
             {
                 OnDead();
-                EntityView.OnDead();
             }
+
+        }
+
+        public virtual bool TryDead()
+        {
+            return false;
         }
 
         protected override void OnDead()
         {
             BulletManager.Instance.RemoveBullet(this);
             CollisionManager.Instance.RemoveCollider(this);
+            EntityView.OnDead();
         }
 
 
