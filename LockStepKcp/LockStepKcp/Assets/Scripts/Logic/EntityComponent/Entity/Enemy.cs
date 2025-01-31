@@ -22,21 +22,21 @@ namespace LockstepTutorial {
 
         public override void DoUpdate(LFloat deltaTime)
         {
-            if (isHurting)
-            {
-                hurtTimer += deltaTime;
-                if (hurtTimer >= hurtTime)
-                {
-                    isHurting = false;
-                    hurtTimer = 0;
-                    OnEndHurt();
-                }
-                else
-                {
-                    return;
-                }
-            }
-            base.DoUpdate(deltaTime);
+            //if (isHurting)
+            //{
+            //    hurtTimer += deltaTime;
+            //    if (hurtTimer >= hurtTime)
+            //    {
+            //        isHurting = false;
+            //        hurtTimer = 0;
+            //        OnEndHurt();
+            //    }
+            //    else
+            //    {
+            //        return;
+            //    }
+            //}
+            //base.DoUpdate(deltaTime);
 
         }
 

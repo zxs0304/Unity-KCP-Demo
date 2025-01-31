@@ -102,7 +102,7 @@ namespace LockstepTutorial {
             if (skillPart.summonBullet)
             {
                 UnityEngine.Debug.Log("召唤子弹" + skillPart.bulletPrefabId);
-                var bullet = BulletManager.InstantiateEntity(20, entity, entity.transform.Pos3);
+                var bullet = BulletManager.InstantiateEntity(skillPart.bulletPrefabId, entity, entity.transform.TransformPoint(skillPart.collider.pos));
                 BulletManager.Instance.AddBullet(bullet as Bullet);
             }
         }

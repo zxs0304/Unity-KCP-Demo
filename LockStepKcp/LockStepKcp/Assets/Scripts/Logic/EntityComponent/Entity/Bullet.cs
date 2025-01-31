@@ -1,5 +1,6 @@
 ﻿using System;
 using Lockstep.Collision2D;
+using Lockstep.ECS.ECDefine;
 using Lockstep.Game;
 using Lockstep.Logic;
 using Lockstep.Math;
@@ -9,10 +10,10 @@ namespace LockstepTutorial
     [Serializable]
     public class Bullet : Entity
     {
-        public float aliveTime;
         public Entity Owner { get; private set; }//创建者
         public CBulletFly Cfly = new CBulletFly();
-
+        public LFloat aliveTime = 0;
+        public LFloat deadTime;
         // 用于config构造
         public Bullet()
         {
@@ -34,6 +35,7 @@ namespace LockstepTutorial
         public override void DoUpdate(LFloat deltaTime)
         {
             base.DoUpdate(deltaTime);
+            aliveTime += deltaTime;
             if (TryDead())
             {
                 OnDead();
@@ -43,6 +45,22 @@ namespace LockstepTutorial
 
         public virtual bool TryDead()
         {
+            switch (PrefabId)
+            {
+                case 20:
+                    if (transform.pos.x.Abs() > 70)
+                    {
+                        return true;
+                    }
+                    break;
+                case 21:
+                    if (aliveTime >= deadTime)
+                    {
+                        return true;
+                    }
+                    break;
+            }
+
             return false;
         }
 

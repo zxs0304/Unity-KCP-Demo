@@ -44,6 +44,7 @@ namespace Lockstep.Collision2D {
             //Gizmos.color = new Color(0, 1.0f - tintVal, tintVal, 0.25f);
             Gizmos.color = Color.red;
             foreach (OctreeObject obj in objects) {
+                UnityEngine.Debug.Log($"center:{obj.Bounds.center} size:{obj.Bounds.size}");
                 Gizmos.DrawCube(obj.Bounds.center.ToLVector3_2D().ToVector3_2D(), obj.Bounds.size.ToLVector3_2D().ToVector3_2D());
             }
 

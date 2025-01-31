@@ -24,9 +24,13 @@ namespace Lockstep.Collision2D {
                     return LRect.CreateRect(tran.pos, halfSize);
                 }
                 case EShape2D.OBB: {
-                    var radius = ((COBB) col).radius;
-                    return LRect.CreateRect(tran.pos, new LVector2(radius, radius));
-                }
+                        //var radius = ((COBB)col).radius;
+                        //return LRect.CreateRect(tran.pos, new LVector2(radius, radius));
+
+                        // size «half Size !!!!!
+                        var halfSize = ((COBB)col).size;
+                        return LRect.CreateRect(tran.pos, halfSize);
+                    }
             }
 
             Debug.LogError("No support type" + type);
