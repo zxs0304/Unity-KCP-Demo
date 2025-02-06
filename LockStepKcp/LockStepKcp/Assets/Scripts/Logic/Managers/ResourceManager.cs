@@ -44,7 +44,7 @@ namespace LockstepTutorial {
 
             if (id < 10) {
                 var config = this.config.GetPlayerConfig(id);
-                var prefab = (GameObject) Resources.Load(pathPrefix + config.prefabPath);
+                var prefab = (GameObject) Resources.Load(pathPrefix+ "Hero/" + config.prefabPath);
                 _id2Prefab[id] = prefab;
                 CollisionManager.Instance.RigisterPrefab(prefab, (int) EColliderLayer.Hero);
                 return prefab;
@@ -52,7 +52,7 @@ namespace LockstepTutorial {
 
             if (id >= 10 && id<20) {
                 var config = this.config.GetEnemyConfig(id - 10);
-                var prefab = (GameObject) Resources.Load(pathPrefix + config.prefabPath);
+                var prefab = (GameObject) Resources.Load(pathPrefix + "Hero/" + config.prefabPath);
                 _id2Prefab[id] = prefab;
                 CollisionManager.Instance.RigisterPrefab(prefab, (int) EColliderLayer.Enemy);
                 return prefab;
@@ -61,7 +61,7 @@ namespace LockstepTutorial {
             if (id >= 20)
             {
                 var config = this.config.GetBulletConfig(id - 20);
-                var prefab = (GameObject)Resources.Load(pathPrefix + config.prefabPath);
+                var prefab = (GameObject)Resources.Load(pathPrefix + "Bullet/" + config.prefabPath);
                 _id2Prefab[id] = prefab;
                 CollisionManager.Instance.RigisterPrefab(prefab, (int)EColliderLayer.Hero);
                 return prefab;

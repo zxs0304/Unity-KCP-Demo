@@ -12,8 +12,11 @@ namespace LockstepTutorial
     {
         public Entity Owner { get; private set; }//创建者
         public CBulletFly Cfly = new CBulletFly();
-        public LFloat aliveTime = 0;
+        private LFloat aliveTime = 0;
         public LFloat deadTime;
+        public string deadEffectName;
+        public LVector2 deadEffectPosition;
+        private bool isCollided = false;
         // 用于config构造
         public Bullet()
         {
@@ -45,23 +48,52 @@ namespace LockstepTutorial
 
         public virtual bool TryDead()
         {
-            switch (PrefabId)
+            if (deadTime > 0)
             {
-                case 20:
-                    if (transform.pos.x.Abs() > 70)
-                    {
-                        return true;
-                    }
-                    break;
-                case 21:
-                    if (aliveTime >= deadTime)
-                    {
-                        return true;
-                    }
-                    break;
+                if (aliveTime >= deadTime)
+                {
+                    return true;
+                }
             }
-
+            else
+            {
+                if (transform.pos.x.Abs() > 70 || isCollided)
+                {
+                    return true;
+                }
+            }
             return false;
+
+            //switch (PrefabId)
+            //{
+            //    case 20:
+            //        if (transform.pos.x.Abs() > 70 || isCollided)
+            //        {
+            //            return true;
+            //        }
+            //        break;
+            //    case 21:
+            //        if (aliveTime >= deadTime)
+            //        {
+            //            return true;
+            //        }
+            //        break;
+            //    case 21:
+            //        if (aliveTime >= deadTime)
+            //        {
+            //            return true;
+            //        }
+            //        break;
+            //    default:
+            //        if (transform.pos.x.Abs() > 70 || isCollided)
+            //        {
+            //            return true;
+            //        }
+            //        break;
+
+            //}
+
+            //return false;
         }
 
         protected override void OnDead()
@@ -83,6 +115,13 @@ namespace LockstepTutorial
 
                 other.Entity.TakeDamage(damage, other.Entity.transform.Pos3, true);
                 other.Entity.rigidbody.AddImpulse(new LVector3(1, 3, 0) * Cfly.flyDir);
+                ////deadTime == 0说明是由碰撞来控制何时死亡
+                //if (deadTime ==0)
+                //{
+                    isCollided = true;
+                //}
+
+
                 Debug.Log($"bullet碰撞enter ");
             }
             if (type == ECollisionEvent.Stay )
