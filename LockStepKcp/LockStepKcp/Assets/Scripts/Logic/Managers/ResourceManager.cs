@@ -63,8 +63,13 @@ namespace LockstepTutorial {
                 var config = this.config.GetBulletConfig(id - 20);
                 var prefab = (GameObject)Resources.Load(pathPrefix + "Bullet/" + config.prefabPath);
                 _id2Prefab[id] = prefab;
-                CollisionManager.Instance.RigisterPrefab(prefab, (int)EColliderLayer.Hero);
+                CollisionManager.Instance.RigisterPrefab(prefab, (int)EColliderLayer.Static);
                 return prefab;
+            }
+
+            if (id < 0)
+            {
+
             }
 
             return null;

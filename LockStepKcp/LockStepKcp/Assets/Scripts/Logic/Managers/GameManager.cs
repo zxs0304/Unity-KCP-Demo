@@ -12,6 +12,7 @@ using Lockstep.Serialization;
 using Lockstep.Util;
 using UnityEngine;
 using Debug = Lockstep.Logging.Debug;
+using UnityEngine.SceneManagement;
 
 
 namespace LockstepTutorial {
@@ -47,8 +48,8 @@ namespace LockstepTutorial {
         public static Player MyPlayer;
         public static Transform MyPlayerTrans;
         [HideInInspector] public float remainTime; // remain time to update
-        //private NetClient netClient;
-        private KcpNetClient netClient;
+        private NetClient netClient;
+        //private KcpNetClient netClient;
         private List<UnityBaseManager> _mgrs = new List<UnityBaseManager>();
         public List<bool> isJumps = new();
 
@@ -69,6 +70,7 @@ namespace LockstepTutorial {
         }
 
         private void Awake(){
+            DontDestroyOnLoad(this);
             Screen.SetResolution(960, 540, false);
 
             gameObject.AddComponent<PingMono>();
@@ -109,16 +111,26 @@ namespace LockstepTutorial {
                 mgr.DoStart();
             }
 
+
+
+        }
+
+        public void StartConnect()
+        {
             Debug.Trace("Before StartGame _IdCounter" + BaseEntity.IdCounter);
-            if (!IsReplay && !IsClientMode) {
-                netClient = new ();
+            if (!IsReplay && !IsClientMode)
+            {
+                netClient = new();
 
                 netClient.Start();
-                netClient.Send(new Msg_JoinRoom() {name = Application.dataPath});
+                netClient.Send(new Msg_JoinRoom() { name = Application.dataPath });
             }
-            else {
-                StartGame(0, playerServerInfos, localPlayerId);
+            else
+            {
+                StartCoroutine(StartGameCoroutine(0, playerServerInfos, localPlayerId));
+                //StartGame(0, playerServerInfos, localPlayerId);
             }
+
         }
 
 
@@ -156,12 +168,32 @@ namespace LockstepTutorial {
             }
         }
 
-        public static void StartGame(Msg_StartGame msg){
+        public void StartGame(Msg_StartGame msg){
+
             UnityEngine.Debug.Log($"StartGame  LocalPlayerId:{msg.localPlayerId}");
-            Instance.StartGame(msg.mapId, msg.playerInfos, msg.localPlayerId);
+
+            StartCoroutine(StartGameCoroutine(msg.mapId, msg.playerInfos, msg.localPlayerId));
+            //Instance.StartGame(msg.mapId, msg.playerInfos, msg.localPlayerId);
+        }
+
+        public IEnumerator StartGameCoroutine(int mapId, PlayerServerInfo[] playerInfos, int localPlayerId)
+        {
+            int sceneIndex = SceneManager.GetActiveScene().buildIndex;
+            if (sceneIndex != 1)
+            {
+                UnityEngine.Debug.Log("正在切换场景");
+                SceneManager.LoadScene(1);
+            }
+            yield return null;
+
+            StartGame(mapId,playerInfos,localPlayerId);
         }
 
         public void StartGame(int mapId, PlayerServerInfo[] playerInfos, int localPlayerId){
+
+            GetComponent<FloatBarManager>().Init();
+            GetComponent<FloatTextManager>().Init();
+
             print("localPlayerId :" + localPlayerId);
 
             _hasStart = true;
@@ -425,6 +457,12 @@ namespace LockstepTutorial {
             }
             camera.position = startPosition;
             isShake = false;
+        }
+
+
+        public void GameOver()
+        {
+            UnityEngine.Debug.Log("游戏结束");
         }
     }
 }

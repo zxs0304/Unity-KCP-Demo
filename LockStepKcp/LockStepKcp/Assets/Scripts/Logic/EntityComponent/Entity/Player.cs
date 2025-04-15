@@ -92,5 +92,10 @@ namespace LockstepTutorial {
             hurtTimer = 0;
         }
 
+        protected override void OnDead()
+        {
+            base.OnDead();
+            GameManager.Instance.GameOver();
+        }
     }
 }

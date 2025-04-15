@@ -49,7 +49,7 @@ namespace Lockstep.Logic
         public void OnStartGame(KCPProxy kcpProxy, IMessage message)
         {
             var msg = message as Msg_StartGame;
-            GameManager.StartGame(msg);
+            GameManager.Instance.StartGame(msg);
         }
 
         public void Send(IMessage msg)

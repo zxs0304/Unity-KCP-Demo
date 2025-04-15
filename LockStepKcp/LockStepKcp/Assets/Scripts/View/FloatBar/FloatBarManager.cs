@@ -21,7 +21,11 @@ public class FloatBarManager : MonoBehaviour {
     private Transform poolTrans;
     private Transform showTrans;
 
-    void Awake(){
+    public void Init()
+    {
+
+        _canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+
         cam = Camera.main;
         cameraTransform = cam.transform;
 
@@ -29,12 +33,14 @@ public class FloatBarManager : MonoBehaviour {
             healthBars.Add(transform.GetChild(i));
 
         _Instance = this;
-        if (prefab == null) {
-            prefab = (GameObject) Resources.Load("Prefabs/FloatingDamage");
+        if (prefab == null)
+        {
+            prefab = (GameObject)Resources.Load("Prefabs/FloatingDamage");
         }
 
-        if (_config == null) {
-            _config = (FloatBarConfig) Resources.Load("FloatBarConfig");
+        if (_config == null)
+        {
+            _config = (FloatBarConfig)Resources.Load("FloatBarConfig");
         }
 
         config = _config;
@@ -42,8 +48,33 @@ public class FloatBarManager : MonoBehaviour {
         showTrans = _CreateTrans("HealthbarRoot");
     }
 
+
+
+    void Awake(){
+
+        //cam = Camera.main;
+        //cameraTransform = cam.transform;
+
+        //for (int i = 0; i < transform.childCount; i++)
+        //    healthBars.Add(transform.GetChild(i));
+
+        //_Instance = this;
+        //if (prefab == null) {
+        //    prefab = (GameObject) Resources.Load("Prefabs/FloatingDamage");
+        //}
+
+        //if (_config == null) {
+        //    _config = (FloatBarConfig) Resources.Load("FloatBarConfig");
+        //}
+
+        //config = _config;
+        //poolTrans = _CreateTrans("HealthbarPool");
+        //showTrans = _CreateTrans("HealthbarRoot");
+    }
+
     Transform _CreateTrans(string name){
         var tran = new GameObject(name).transform;
+        _canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         tran.SetParent(canvas.transform, false);
         tran.localPosition = Vector3.zero;
         tran.localRotation = Quaternion.identity;

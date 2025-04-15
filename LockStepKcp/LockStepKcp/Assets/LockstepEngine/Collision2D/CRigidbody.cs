@@ -2,6 +2,7 @@ using System;
 using Lockstep.Collision2D;
 using Lockstep.Logging;
 using Lockstep.Math;
+using UnityEngine;
 
 namespace Lockstep.Logic {
     public delegate void OnFloorResultCallback(bool isOnFloor);
@@ -110,11 +111,35 @@ namespace Lockstep.Logic {
             if (onFloor) {
                 y = LFloat.zero;
             }
+
+            LayerMask mask = LayerMask.GetMask("Floor");
+            // 定义射线的起点和方向
+            UnityEngine.Ray2D ray = new UnityEngine.Ray2D(transform.pos.ToVector2(),Vector2.down); // 使用2D射线
+            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, .5f, mask); // 射线检测
+
+            if (hit.collider != null)
+            {
+                UnityEngine.Debug.Log("Hit: " + hit.collider.name);
+                onFloor = true;
+            }
+
             return onFloor;
         }
 
         private bool TestOnFloor(LVector3 pos){
             var onFloor = pos.y <= 0;//TODO check with scene
+
+            LayerMask mask = LayerMask.GetMask("Floor");
+            // 定义射线的起点和方向
+            UnityEngine.Ray2D ray = new UnityEngine.Ray2D(transform.pos.ToVector2(), Vector2.down); // 使用2D射线
+            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, .5f, mask); // 射线检测
+
+            if (hit.collider != null)
+            {
+                UnityEngine.Debug.Log("在地面");
+                onFloor = true;
+            }
+
             return onFloor;
         }
 

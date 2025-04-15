@@ -21,6 +21,32 @@ public class FloatTextManager : MonoBehaviour {
     private List<FloatText> runingTexts = new List<FloatText>();
     private Queue<FloatText> pools = new Queue<FloatText>();
 
+    public void Init()
+    {
+        canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+
+        _Instance = this;
+        if (prefab == null)
+        {
+            prefab = (GameObject)Resources.Load("Prefabs/FloatingDamage");
+        }
+
+        if (config == null)
+        {
+            config = Resources.Load<FloatTextConfig>("Config/FloatDamageConfig");
+        }
+
+        curveAlpha = config.curveAlpha;
+        curveScale = config.curveScale;
+        curveX = config.curveX;
+        curveY = config.curveY;
+        color = config.color;
+        slideTotalTime = config.slideTotalTime;
+        yOffset = config.yOffset;
+        xOffset = config.xOffset;
+
+    }
+
     public float GetAlpha(float percent){
         return curveAlpha.Evaluate(percent);
     }
@@ -56,23 +82,25 @@ public class FloatTextManager : MonoBehaviour {
     public FloatTextConfig config;
 
     private void Start(){
-        _Instance = this;
-        if (prefab == null) {
-            prefab = (GameObject) Resources.Load("Prefabs/FloatingDamage");
-        }
+        //_Instance = this;
+        //if (prefab == null) {
+        //    prefab = (GameObject) Resources.Load("Prefabs/FloatingDamage");
+        //}
 
-        if (config == null) {
-            config = Resources.Load<FloatTextConfig>("Config/FloatDamageConfig");
-        }
+        //if (config == null) {
+        //    config = Resources.Load<FloatTextConfig>("Config/FloatDamageConfig");
+        //}
 
-        curveAlpha = config.curveAlpha;
-        curveScale = config.curveScale;
-        curveX = config.curveX;
-        curveY = config.curveY;
-        color = config.color;
-        slideTotalTime = config.slideTotalTime;
-        yOffset = config.yOffset;
-        xOffset = config.xOffset;
+        //curveAlpha = config.curveAlpha;
+        //curveScale = config.curveScale;
+        //curveX = config.curveX;
+        //curveY = config.curveY;
+        //color = config.color;
+        //slideTotalTime = config.slideTotalTime;
+        //yOffset = config.yOffset;
+        //xOffset = config.xOffset;
+
+
     }
 
     private void DestroyText(FloatText text){

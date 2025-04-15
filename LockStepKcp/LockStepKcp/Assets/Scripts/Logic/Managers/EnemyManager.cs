@@ -10,7 +10,7 @@ namespace LockstepTutorial {
         public static EnemyManager Instance { get; private set; }
         public List<Enemy> allEnemy = new List<Enemy>();
 
-        public static int maxCount = 1;
+        public static int maxCount = 3;
         private static int curCount = 0;
         private static int enmeyID = 0;
 
@@ -64,5 +64,7 @@ namespace LockstepTutorial {
             obj.name = obj.name + enmeyID++;
             return entity;
         }
+
+
     }
 }

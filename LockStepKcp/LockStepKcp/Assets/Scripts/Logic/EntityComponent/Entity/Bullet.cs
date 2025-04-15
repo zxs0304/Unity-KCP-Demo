@@ -108,7 +108,7 @@ namespace LockstepTutorial
         {
             if (type == ECollisionEvent.Enter)
             {
-                if (other.Entity == Owner)
+                if ((other.Entity is Player && other.Entity == Owner) || other.Entity is Bullet)
                 {
                     return;
                 }
