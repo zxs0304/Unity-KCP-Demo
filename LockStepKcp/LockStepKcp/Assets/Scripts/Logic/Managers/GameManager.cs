@@ -53,6 +53,8 @@ namespace LockstepTutorial {
         private List<UnityBaseManager> _mgrs = new List<UnityBaseManager>();
         public List<bool> isJumps = new();
 
+        public bool isStart = false;
+        public StartPanel startPanel;
 
         private static string _traceLogPath {
             get {
@@ -86,7 +88,7 @@ namespace LockstepTutorial {
 
         private void Update(){
 
-            if (!IsReplay && !IsClientMode )
+            if (!IsReplay && !IsClientMode && isStart)
             {
                 netClient.Update();
             }
@@ -118,6 +120,8 @@ namespace LockstepTutorial {
         public void StartConnect()
         {
             Debug.Trace("Before StartGame _IdCounter" + BaseEntity.IdCounter);
+
+            isStart = true;
             if (!IsReplay && !IsClientMode)
             {
                 netClient = new();
@@ -178,6 +182,9 @@ namespace LockstepTutorial {
 
         public IEnumerator StartGameCoroutine(int mapId, PlayerServerInfo[] playerInfos, int localPlayerId)
         {
+            startPanel.OnMatchSuccess();
+            yield return new UnityEngine.WaitForSeconds(1f);
+
             int sceneIndex = SceneManager.GetActiveScene().buildIndex;
             if (sceneIndex != 1)
             {
@@ -463,6 +470,10 @@ namespace LockstepTutorial {
         public void GameOver()
         {
             UnityEngine.Debug.Log("游戏结束");
+
+            Destroy(gameObject,2f);
+
+            SceneManager.LoadScene(0);
         }
     }
 }
