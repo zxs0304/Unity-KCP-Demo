@@ -87,8 +87,7 @@ namespace LockstepTutorial {
         }
 
         private void Update(){
-
-            if (!isStart && !IsReplay)
+            if (!isStart)
             {
                 return;
             }
@@ -127,10 +126,6 @@ namespace LockstepTutorial {
             if (IsReplay)
             {
                 RecordHelper.Deserialize(recordFilePath, this);
-                playerCount = 1;
-                localPlayerId = 0;
-                playerServerInfos = new PlayerServerInfo[] { ClientModeInfo };
-                frames = new List<FrameInput>();
             }
 
             if (IsClientMode)
@@ -140,7 +135,6 @@ namespace LockstepTutorial {
                 playerServerInfos = new PlayerServerInfo[] { ClientModeInfo };
                 frames = new List<FrameInput>();
             }
-
 
             Debug.Trace("Before StartGame _IdCounter" + BaseEntity.IdCounter);
 
@@ -156,15 +150,12 @@ namespace LockstepTutorial {
 
                 });
             }
-            else if(!IsReplay && IsClientMode)
+            else
             {
                 StartCoroutine(StartGameCoroutine(0, playerServerInfos, localPlayerId));
                 //StartGame(0, playerServerInfos, localPlayerId);
             }
-            else if (IsReplay && !IsClientMode)
-            {
-                StartCoroutine(StartGameCoroutine(0, playerServerInfos, localPlayerId));
-            }
+
         }
 
 
@@ -212,7 +203,11 @@ namespace LockstepTutorial {
 
         public IEnumerator StartGameCoroutine(int mapId, PlayerServerInfo[] playerInfos, int localPlayerId)
         {
-            startPanel.OnMatchSuccess();
+            if (!IsReplay) 
+            {
+                startPanel.OnMatchSuccess();
+            }
+
             yield return new UnityEngine.WaitForSeconds(1f);
 
             int sceneIndex = SceneManager.GetActiveScene().buildIndex;
