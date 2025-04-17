@@ -95,6 +95,10 @@ namespace Lockstep.FakeServer{
             var info = new PlayerServerInfo();
             info.Id = _idCounter++;
             info.name = name;
+            //根据name 的倒数第二个字符 分配英雄 
+            // 因为倒数第一个字符是 _idCounter
+            info.PrefabId = name[name.Length-2] - '0';
+
             _name2Player[name] = info;
             _id2Player[info.Id] = info;
             _id2Session[info.Id] = session;
