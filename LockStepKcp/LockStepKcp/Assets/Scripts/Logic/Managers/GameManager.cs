@@ -55,7 +55,7 @@ namespace LockstepTutorial {
 
         public bool isStart = false;
         public StartPanel startPanel;
-
+        public int characterNumber = 0;
         private static string _traceLogPath {
             get {
 #if UNITY_STANDALONE_OSX
@@ -88,7 +88,12 @@ namespace LockstepTutorial {
 
         private void Update(){
 
-            if (!IsReplay && !IsClientMode && isStart)
+            if (!isStart && !IsReplay)
+            {
+                return;
+            }
+
+            if (!IsReplay && !IsClientMode)
             {
                 netClient.Update();
             }
@@ -119,6 +124,24 @@ namespace LockstepTutorial {
 
         public void StartConnect()
         {
+            if (IsReplay)
+            {
+                RecordHelper.Deserialize(recordFilePath, this);
+                playerCount = 1;
+                localPlayerId = 0;
+                playerServerInfos = new PlayerServerInfo[] { ClientModeInfo };
+                frames = new List<FrameInput>();
+            }
+
+            if (IsClientMode)
+            {
+                playerCount = 1;
+                localPlayerId = 0;
+                playerServerInfos = new PlayerServerInfo[] { ClientModeInfo };
+                frames = new List<FrameInput>();
+            }
+
+
             Debug.Trace("Before StartGame _IdCounter" + BaseEntity.IdCounter);
 
             isStart = true;
@@ -127,14 +150,21 @@ namespace LockstepTutorial {
                 netClient = new();
 
                 netClient.Start();
-                netClient.Send(new Msg_JoinRoom() { name = Application.dataPath });
+                netClient.Send(new Msg_JoinRoom()
+                {
+                    name = Application.dataPath + "_" + characterNumber
+
+                });
             }
-            else
+            else if(!IsReplay && IsClientMode)
             {
                 StartCoroutine(StartGameCoroutine(0, playerServerInfos, localPlayerId));
                 //StartGame(0, playerServerInfos, localPlayerId);
             }
-
+            else if (IsReplay && !IsClientMode)
+            {
+                StartCoroutine(StartGameCoroutine(0, playerServerInfos, localPlayerId));
+            }
         }
 
 
@@ -349,16 +379,16 @@ namespace LockstepTutorial {
 
 
         public override void DoStart(){
-            if (IsReplay) {
-                RecordHelper.Deserialize(recordFilePath, this);
-            }
+            //if (IsReplay) {
+            //    RecordHelper.Deserialize(recordFilePath, this);
+            //}
 
-            if (IsClientMode) {
-                playerCount = 1;
-                localPlayerId = 0;
-                playerServerInfos = new PlayerServerInfo[] {ClientModeInfo};
-                frames = new List<FrameInput>();
-            }
+            //if (IsClientMode) {
+            //    playerCount = 1;
+            //    localPlayerId = 0;
+            //    playerServerInfos = new PlayerServerInfo[] {ClientModeInfo};
+            //    frames = new List<FrameInput>();
+            //}
         }
 
 
