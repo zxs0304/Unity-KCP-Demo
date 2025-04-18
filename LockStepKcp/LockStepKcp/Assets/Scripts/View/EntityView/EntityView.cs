@@ -32,7 +32,7 @@ namespace LockstepTutorial {
 
         public virtual void OnDead(){
             if (uiFloatBar != null) FloatBarManager.DestroyText(uiFloatBar);
-            GameObject.Destroy(gameObject);
+
         }
 
         public virtual void Update(){

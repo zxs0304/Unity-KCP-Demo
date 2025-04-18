@@ -8,11 +8,11 @@ using Lockstep.Logic;
 using Lockstep.PathFinding;
 using Lockstep.Game;
 using Lockstep.Math;
-using Lockstep.Serialization;
 using Lockstep.Util;
 using UnityEngine;
 using Debug = Lockstep.Logging.Debug;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 
 namespace LockstepTutorial {
@@ -55,7 +55,11 @@ namespace LockstepTutorial {
 
         public bool isStart = false;
         public StartPanel startPanel;
+        public EndPanel endPanel;
         public int characterNumber = 0;
+        public bool isExit = false;
+
+
         private static string _traceLogPath {
             get {
 #if UNITY_STANDALONE_OSX
@@ -225,8 +229,7 @@ namespace LockstepTutorial {
 
             GetComponent<FloatBarManager>().Init();
             GetComponent<FloatTextManager>().Init();
-
-            print("localPlayerId :" + localPlayerId);
+            endPanel = GameObject.Find("Canvas").GetComponentInChildren<EndPanel>();
 
             _hasStart = true;
             curMapId = mapId;
@@ -292,6 +295,8 @@ namespace LockstepTutorial {
                 }
             }
             isJumps.Clear();
+
+            playerInput.wantExit = isExit;
 
             netClient?.Send(new Msg_PlayerInput() {
                 input = playerInput,
@@ -492,13 +497,44 @@ namespace LockstepTutorial {
         }
 
 
-        public void GameOver()
+        public void GameOver(int deadPlayerId)
         {
-            UnityEngine.Debug.Log("游戏结束");
+            StartCoroutine(GameOverReally(deadPlayerId));
+        }
 
-            Destroy(gameObject,2f);
+        public IEnumerator GameOverReally( int deadPlayerId)
+        {
 
+
+            yield return new UnityEngine.WaitForSeconds(1.5f);
+
+
+            if (deadPlayerId == localPlayerId)
+            {
+                endPanel.SetWinText(false);
+            }
+            else
+            {
+                endPanel.SetWinText(true);
+            }
+            endPanel.gameObject.SetActive(true);
+
+            yield return  new UnityEngine.WaitForSeconds(5f);
+            Destroy(gameObject);
             SceneManager.LoadScene(0);
         }
+
+        public void ExitGame()
+        {
+            StartCoroutine(ExitGameReally());
+        }
+
+        public IEnumerator ExitGameReally()
+        {
+            yield return new UnityEngine.WaitForSeconds(0.4f);
+            Destroy(gameObject);
+            SceneManager.LoadScene(0);
+        }
+
     }
 }

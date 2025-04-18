@@ -22,6 +22,10 @@ namespace LockstepTutorial {
         public override void Update()
         {
             base.Update();
+            if (player.isDead)
+            {
+                return;
+            }
 
             animator.SetBool("Walking", player.mover.needMove);
             animator.SetBool("OnFloor", player.rigidbody.isOnFloor);
@@ -37,22 +41,43 @@ namespace LockstepTutorial {
 
         public void PlayerOnStartSkill(string skillName)
         {
-            animator.Play(skillName);
+            if (!player.isDead)
+            {
+                animator.Play(skillName);
+            }
+
         }
 
         public void PlayerOnLand()
         {
-            animator.Play("Idle");
+            if (!player.isDead)
+            {
+                animator.Play("Idle");
+            }
         }
         public void PlayerOnEndHurt()
         {
-            animator.Play("Idle");
+            if (!player.isDead)
+            {
+                animator.Play("Idle");
+            }
+
         }
         public void PlayerOnStartHurt()
         {
             animator.Play("Hurt");
             StartCoroutine(PlayerOnStartHurtReally()) ;
         }
+
+        public override void OnDead()
+        {
+            animator.Play("Die");
+            base.OnDead();
+            GameObject.Destroy(gameObject,2f);
+        }
+
+
+        
 
         IEnumerator PlayerOnStartHurtReally()
         {

@@ -20,6 +20,7 @@ namespace LockstepTutorial
         public override void OnDead()
         {
             base.OnDead();
+            GameObject.Destroy(gameObject);
             SpawnEffect();
         }
 

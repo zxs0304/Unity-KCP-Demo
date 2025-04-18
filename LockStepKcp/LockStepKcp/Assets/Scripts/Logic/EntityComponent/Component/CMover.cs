@@ -21,7 +21,10 @@ namespace LockstepTutorial {
         
         public override void DoUpdate(LFloat deltaTime)
         {
-
+            if (player.isDead)
+            {
+                return;
+            }
             needMove = input.inputUV.sqrMagnitude > new LFloat(true, 10);
             if (needMove && player.skillBox.canMove)
             {

@@ -48,6 +48,11 @@ namespace LockstepTutorial {
             if (input.skillId != -1) {
                 Fire(input.skillId);
             }
+            Debug.Log("退出" + input.wantExit);
+            if (input.wantExit)
+            {
+                TakeDamage(999, transform.pos.ToLVector3XY(), false);
+            }
 
 
         }
@@ -95,7 +100,7 @@ namespace LockstepTutorial {
         protected override void OnDead()
         {
             base.OnDead();
-            GameManager.Instance.GameOver();
+            GameManager.Instance.GameOver(localId);
         }
     }
 }

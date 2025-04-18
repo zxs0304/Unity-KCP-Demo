@@ -50,7 +50,6 @@ namespace LockstepTutorial {
                 GameManager.CurGameInput =  new PlayerInput() {
                     mousePos = mousePos,
                     inputUV = inputUV,
-                    isInputFire = isInputFire,
                     skillId = skillId,
                     isJump = isJump,
                 };

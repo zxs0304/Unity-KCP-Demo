@@ -62,14 +62,14 @@ namespace Lockstep.Logic {
     public class PlayerInput : BaseFormater {
         public LVector2 mousePos;
         public LVector2 inputUV;
-        public bool isInputFire;
+        public bool wantExit;
         public int skillId;
         public bool isJump;
 
         public override void Serialize(Serializer writer){
             writer.Write(mousePos);
             writer.Write(inputUV);
-            writer.Write(isInputFire);
+            writer.Write(wantExit);
             writer.Write(skillId);
             writer.Write(isJump);
         }
@@ -77,7 +77,7 @@ namespace Lockstep.Logic {
         public override void Deserialize(Deserializer reader){
             mousePos = reader.ReadLVector2();
             inputUV = reader.ReadLVector2();
-            isInputFire = reader.ReadBoolean();
+            wantExit = reader.ReadBoolean();
             skillId = reader.ReadInt32();
             isJump = reader.ReadBoolean();
         }
@@ -87,7 +87,7 @@ namespace Lockstep.Logic {
             return new PlayerInput() {
                 mousePos = tThis.mousePos,
                 inputUV = tThis.inputUV,
-                isInputFire = tThis.isInputFire,
+                wantExit = tThis.wantExit,
                 skillId = tThis.skillId,
                 isJump = tThis.isJump,
             };

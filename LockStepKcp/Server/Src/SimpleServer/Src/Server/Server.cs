@@ -84,20 +84,22 @@ namespace Lockstep.FakeServer{
 
         void OnPlayerConnect(Session session, IMessage message){
             //TODO load from db
-            
             var msg = message as Msg_JoinRoom;
+
+            var info = new PlayerServerInfo();
+            //根据name  分配英雄 
+            info.PrefabId = msg.name[msg.name.Length - 1] - '0';
+
             msg.name = msg.name + _idCounter;
             var name = msg.name;
             if (_name2Player.TryGetValue(name, out var val)) {
                 return;
             }
 
-            var info = new PlayerServerInfo();
+
             info.Id = _idCounter++;
             info.name = name;
-            //根据name 的倒数第二个字符 分配英雄 
-            // 因为倒数第一个字符是 _idCounter
-            info.PrefabId = name[name.Length-2] - '0';
+
 
             _name2Player[name] = info;
             _id2Player[info.Id] = info;

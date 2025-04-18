@@ -36,7 +36,7 @@ namespace LockstepTutorial {
             dumpSb.Append(" skillId:" + input.skillId);
             dumpSb.Append(" " + input.mousePos);
             dumpSb.Append(" " + input.inputUV);
-            dumpSb.Append(" " + input.isInputFire);
+            dumpSb.Append(" " + input.wantExit);
             dumpSb.Append(" " + input.isJump);
             dumpSb.AppendLine();
         }
