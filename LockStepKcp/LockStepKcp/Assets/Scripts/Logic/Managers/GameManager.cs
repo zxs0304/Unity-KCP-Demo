@@ -77,7 +77,7 @@ namespace LockstepTutorial {
 
         private void Awake(){
             DontDestroyOnLoad(this);
-            Screen.SetResolution(960, 540, false);
+            //Screen.SetResolution(960, 540, false);
 
             gameObject.AddComponent<PingMono>();
             gameObject.AddComponent<InputMono>();
